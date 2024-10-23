@@ -1,7 +1,8 @@
-import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
-import { Users, Heart, Info } from 'lucide-react'
 import Layout from '../components/Layout';
+
+import React from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { HeartHandshake, Users, Target, Lightbulb, Squirrel, Eye } from 'lucide-react'
 
 export default function AboutPage() {
   return (
@@ -9,51 +10,104 @@ export default function AboutPage() {
     <div className="min-h-screen bg-gray-100 py-12">
       <div className="container mx-auto px-4">
         <h1 className="text-4xl font-bold mb-8 text-center">About One Heart Blacktown</h1>
-        <div className="max-w-3xl mx-auto mb-12">
-          <p className="text-lg mb-4">
-            One Heart Blacktown is a community-focused organization dedicated to making Blacktown a better place for all who live, work, and travel here. We believe in the power of unity and compassion to transform our city.
-          </p>
-          <p className="text-lg">
-            Our mission is to call people to follow Jesus' words, works, and ways in Blacktown City, with churches serving the city and its people.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-8">
-          <Card className="bg-white shadow-lg">
+        
+        <section className="mb-12">
+        <Card className="bg-white shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Users className="mr-2 text-pink-500" />
-                Our Members
+                <Squirrel className="mr-2 text-pink-500" />
+                Our Story
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>We are a partnership of local church leaders and community members committed to positive change in Blacktown.</p>
+              <p className="text-lg">
+              In a densely populated and diverse area of western Sydney, many churches are only involved in
+            token or historical ways of engaging with the community, meeting surface level needs for
+            attracting people to Sunday services. A new partnership between local church leaders has
+            established a community hub in the heart of Blacktown. The hub's purpose is to motivate 'The
+            Church' of Blacktown to be immersed in the local community and to see gospel transformation in
+            people's lives in the name of Jesus.
+              </p>
             </CardContent>
           </Card>
-          <Card className="bg-white shadow-lg">
+        </section>
+
+        <section className="mb-12">
+        <Card className="bg-white shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Heart className="mr-2 text-pink-500" />
-                Our Shared Values
+                <Eye className="mr-2 text-pink-500" />
+                Our Vision
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Our core values are Prayer (Dependence on God's enabling power), Unity (Embracing the diversity of the one body), and Mission (Action oriented through obedience to Jesus).</p>
+              <p className="text-lg">
+              God's will to be done in Blacktown as it is in heaven: suburban transformation through
+              restoration and healing of the city aligning with God's desires and heart for its people.
+              </p>
             </CardContent>
           </Card>
+        </section>
+
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4">Our Values</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="bg-white shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <HeartHandshake className="mr-2 text-pink-500" />
+                  Prayer
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Dependence on God's enabling power</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Users className="mr-2 text-pink-500" />
+                  Unity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Embracing the diversity of the one body, the bride of Christ</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-white shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Target className="mr-2 text-pink-500" />
+                  Mission
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Action orientated through obedience to Jesus and empowered by his Spirit</p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section className="mb-12">
+          <h2 className="text-2xl font-semibold mb-4">Our Strategy</h2>
           <Card className="bg-white shadow-lg">
             <CardHeader>
               <CardTitle className="flex items-center">
-                <Info className="mr-2 text-pink-500" />
-                Our Projects
+                <Lightbulb className="mr-2 text-pink-500" />
+                Creating Opportunities
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p>We undertake various projects aimed at suburban transformation through restoration and healing of the city, aligning with God's desires for its people.</p>
+              <p className="text-lg">
+                Create space (physical, social, relational, civil space) and opportunities for "champions"
+                who align with the vision, mission, and values, and develop teams who serve the city.
+              </p>
             </CardContent>
           </Card>
-        </div>
+        </section>
       </div>
-    </div>
+      </div>
     </Layout>
   )
 }

@@ -22,9 +22,8 @@ import { useState, useEffect } from "react";
 
 const images = [
   "/caro4.png?height=1080&width=1920",
-  "/caro1.jpg?height=1080&width=1920",
   "/caro2.jpg?height=1080&width=1920",
-  "/caro3.jpg?height=1080&width=1920",
+  "/caro1.jpg?height=1080&width=1920",
 ];
 
 export default function Homepage() {
@@ -139,7 +138,7 @@ export default function Homepage() {
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-black text-white">
+                <Card key={i} className="bg-white shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Briefcase className="mr-2 text-pink-500" />
@@ -165,7 +164,7 @@ export default function Homepage() {
             </h2>
             <div className="grid md:grid-cols-2 gap-8">
               {[1, 2].map((i) => (
-                <Card key={i} className="bg-black text-white">
+                <Card key={i} className="bg-white shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <BookOpen className="mr-2 text-pink-500" />
@@ -191,7 +190,7 @@ export default function Homepage() {
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-black text-white">
+                <Card key={i} className="bg-white shadow-lg">
                   <CardHeader>
                     <CardTitle className="flex items-center">
                       <Calendar className="mr-2 text-pink-500" />
@@ -218,7 +217,7 @@ export default function Homepage() {
               About One Heart Blacktown
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="bg-black text-white">
+              <Card className="bg-white shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Users className="mr-2 text-pink-500" />
@@ -232,7 +231,7 @@ export default function Homepage() {
                   </p>
                 </CardContent>
               </Card>
-              <Card className="bg-black text-white">
+              <Card className="bg-white shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Heart className="mr-2 text-pink-500" />
@@ -246,7 +245,7 @@ export default function Homepage() {
                   </p>
                 </CardContent>
               </Card>
-              <Card className="bg-black text-white">
+              <Card className="bg-white shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Info className="mr-2 text-pink-500" />
@@ -270,23 +269,25 @@ export default function Homepage() {
             <p className="text-lg mb-8 text-black">
               Get in touch to learn more about our mission or to get involved.
             </p>
-            <Button
-              size="lg"
-              className="flex items-center mx-auto bg-pink-500 text-white hover:bg-pink-600"
-            >
-              <Mail className="mr-2" />
-              Contact Us
-            </Button>
+            <Link href="/contact">
+              <Button
+                size="lg"
+                className="flex items-center mx-auto bg-pink-500 text-white hover:bg-pink-600"
+              >
+                <Mail className="mr-2" />
+                Contact Us
+              </Button>
+            </Link>
           </div>
         </section>
       </main>
 
       <footer className="bg-black text-white py-8">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2023 One Heart Blacktown. All rights reserved.</p>
+          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
           <div className="mt-4 flex justify-center items-center">
             <MapPin className="mr-2" />
-            <span>Blacktown, NSW, Australia</span>
+            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
           </div>
         </div>
       </footer>
