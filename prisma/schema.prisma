@@ -118,6 +118,19 @@ model admins {
   updatedAt      DateTime @updatedAt
 }
 
+model adminrequests {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  email          String   @unique
+  name           String
+  password       String
+  description    String?
+  address        String?
+  contactDetails String?
+  status         String   @default("pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model comments {
   id       String   @id @default(auto()) @map("_id") @db.ObjectId
   date     DateTime @db.Date
