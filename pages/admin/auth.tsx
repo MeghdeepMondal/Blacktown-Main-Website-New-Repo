@@ -28,7 +28,6 @@ const AdminAuth: React.FC = () => {
     description: '',
     address: '',
     contactDetails: '',
-    logo: null as File | null,
     lat: center.lat,
     lng: center.lng
   })
@@ -45,12 +44,6 @@ const AdminAuth: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({ ...prev, logo: e.target.files![0] }))
-    }
-  }
-
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
     if (e.latLng) {
       const lat = e.latLng.lat()
@@ -62,29 +55,33 @@ const AdminAuth: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const formDataToSend = new FormData()
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null) {
-        formDataToSend.append(key, value instanceof File ? value : String(value))
-      }
-    })
-    formDataToSend.append('isLogin', isLogin.toString())
+    const dataToSend = {
+      ...formData,
+      isLogin
+    }
 
     try {
       const response = await fetch('/api/admin/auth', {
         method: 'POST',
-        body: formDataToSend
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend)
       })
       const data = await response.json()
       
       if (response.ok) {
         if (isLogin) {
-          // Store the token in localStorage or a secure cookie
           localStorage.setItem('adminToken', data.token)
-          router.push('/admin/dashboard')
+          if (data.adminId) {
+            router.push(`/admin/dashboard/${data.adminId}`)
+          } else {
+            console.error('Admin ID not received from server')
+            alert('Error: Admin ID not received. Please try again.')
+          }
         } else {
           alert(data.message)
-          setIsLogin(true) // Switch to login view
+          setIsLogin(true) // Switch to login view after successful signup
         }
       } else {
         alert(data.message)
@@ -150,27 +147,6 @@ const AdminAuth: React.FC = () => {
                     onChange={handleInputChange}
                     required
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="logo">Logo</Label>
-                  <div className="flex items-center space-x-2">
-                    <Input
-                      id="logo"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      ref={fileInputRef}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <Upload className="mr-2 h-4 w-4" /> Upload Logo
-                    </Button>
-                    {formData.logo && <span>{formData.logo.name}</span>}
-                  </div>
                 </div>
                 {isLoaded && (
                   <div className="space-y-2">
