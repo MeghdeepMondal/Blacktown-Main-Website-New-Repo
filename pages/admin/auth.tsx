@@ -68,25 +68,26 @@ const AdminAuth: React.FC = () => {
         formDataToSend.append(key, value instanceof File ? value : String(value))
       }
     })
-  
+    formDataToSend.append('isLogin', isLogin.toString())
+
     try {
       const response = await fetch('/api/admin/auth', {
         method: 'POST',
         body: formDataToSend
       })
+      const data = await response.json()
+      
       if (response.ok) {
-        const data = await response.json()
         if (isLogin) {
+          // Store the token in localStorage or a secure cookie
+          localStorage.setItem('adminToken', data.token)
           router.push('/admin/dashboard')
         } else {
-          // Show message for successful signup request
           alert(data.message)
           setIsLogin(true) // Switch to login view
         }
       } else {
-        // Handle error
-        const errorData = await response.json()
-        alert(errorData.message)
+        alert(data.message)
       }
     } catch (error) {
       console.error('Error during authentication:', error)

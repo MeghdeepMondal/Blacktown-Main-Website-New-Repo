@@ -5,7 +5,6 @@ import jwt from 'jsonwebtoken'
 import { IncomingForm } from 'formidable'
 import fs from 'fs/promises'
 
-
 const prisma = new PrismaClient()
 
 export const config = {

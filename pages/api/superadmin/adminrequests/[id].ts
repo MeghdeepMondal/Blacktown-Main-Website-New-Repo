@@ -13,25 +13,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'Invalid action' })
       }
 
-      const adminRequest = await prisma.adminrequests.update({
-        where: { id: String(id) },
-        data: { status: action === 'approve' ? 'approved' : 'rejected' }
+      const adminRequest = await prisma.adminrequests.findUnique({
+        where: { id: String(id) }
       })
 
+      if (!adminRequest) {
+        return res.status(404).json({ message: 'Admin request not found' })
+      }
+
       if (action === 'approve') {
+        // Create a new admin entry
         await prisma.admins.create({
           data: {
-            email: adminRequest.email,
             name: adminRequest.name,
+            email: adminRequest.email,
+            password: adminRequest.password,
             description: adminRequest.description,
             address: adminRequest.address,
             contactDetails: adminRequest.contactDetails,
-            password: adminRequest.password // Note: In a real-world scenario, you'd want to hash this password
+            logo: adminRequest.logo,
+            lat: adminRequest.lat,
+            lng: adminRequest.lng,
           }
         })
-      }
 
-      res.status(200).json({ message: `Admin request ${action}d successfully` })
+        // Delete the admin request
+        await prisma.adminrequests.delete({
+          where: { id: String(id) }
+        })
+
+        res.status(200).json({ message: 'Admin request approved and admin created successfully' })
+      } else {
+        // If rejecting, just delete the admin request
+        await prisma.adminrequests.delete({
+          where: { id: String(id) }
+        })
+
+        res.status(200).json({ message: 'Admin request rejected and deleted successfully' })
+      }
     } catch (error) {
       console.error('Error updating admin request:', error)
       res.status(500).json({ message: 'Error updating admin request' })
