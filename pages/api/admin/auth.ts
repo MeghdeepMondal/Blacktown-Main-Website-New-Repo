@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { IncomingForm } from 'formidable'
 import fs from 'fs/promises'
 
+
 const prisma = new PrismaClient()
 
 export const config = {
@@ -63,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         }
 
-        const newAdmin = await prisma.admins.create({
+        const newAdminRequest = await prisma.adminrequests.create({
           data: {
             name: name[0],
             email: email[0],
@@ -71,17 +72,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             description: description[0],
             address: address[0],
             contactDetails: contactDetails[0],
-            logo: logoBuffer || null,  // Make sure to handle null case
+            logo: logoBuffer || null,
             lat: parseFloat(lat[0]),
             lng: parseFloat(lng[0]),
+            status: 'pending'
           },
         })
 
-        const token = jwt.sign({ adminId: newAdmin.id }, process.env.JWT_SECRET!, { expiresIn: '1d' })
-        res.status(201).json({ message: 'Admin created successfully', token })
+        res.status(201).json({ message: 'Admin request submitted successfully. Please wait for approval.' })
       } catch (error) {
         console.error('Signup error:', error)
-        res.status(500).json({ message: 'Error creating admin' })
+        res.status(500).json({ message: 'Error creating admin request' })
       }
     }
   } else {

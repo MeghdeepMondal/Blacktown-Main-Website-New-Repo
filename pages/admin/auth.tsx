@@ -68,20 +68,29 @@ const AdminAuth: React.FC = () => {
         formDataToSend.append(key, value instanceof File ? value : String(value))
       }
     })
-
+  
     try {
       const response = await fetch('/api/admin/auth', {
         method: 'POST',
         body: formDataToSend
       })
       if (response.ok) {
-        router.push('/admin/dashboard')
+        const data = await response.json()
+        if (isLogin) {
+          router.push('/admin/dashboard')
+        } else {
+          // Show message for successful signup request
+          alert(data.message)
+          setIsLogin(true) // Switch to login view
+        }
       } else {
         // Handle error
-        console.error('Authentication failed')
+        const errorData = await response.json()
+        alert(errorData.message)
       }
     } catch (error) {
       console.error('Error during authentication:', error)
+      alert('An error occurred during authentication')
     }
   }
 
@@ -203,6 +212,7 @@ const AdminAuth: React.FC = () => {
               {isLogin ? 'Login' : 'Signup'}
             </Button>
           </form>
+          
           <p className="mt-4 text-center">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
