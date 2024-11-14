@@ -243,7 +243,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
       <header className="bg-black text-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -259,37 +259,37 @@ const AdminDashboard: React.FC = () => {
           <nav>
             <ul className="flex space-x-6">
               <li>
-                <Link href="/" className="text-white hover:text-pink-500">
+                <Link href="/" className="text-white hover:text-pink-400 transition-colors duration-300">
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   href="/opportunities"
-                  className="text-white hover:text-pink-500"
+                  className="text-white hover:text-pink-400 transition-colors duration-300"
                 >
                   Opportunities
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-white hover:text-pink-500">
+                <Link href="/blog" className="text-white hover:text-pink-400 transition-colors duration-300">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-white hover:text-pink-500">
+                <Link href="/events" className="text-white hover:text-pink-400 transition-colors duration-300">
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-white hover:text-pink-500">
+                <Link href="/about" className="text-white hover:text-pink-400 transition-colors duration-300">
                   About
                 </Link>
               </li>
               <li>
                 <Link
                   href="/contact"
-                  className="text-white hover:text-pink-500"
+                  className="text-white hover:text-pink-400 transition-colors duration-300"
                 >
                   Contact
                 </Link>
@@ -297,7 +297,7 @@ const AdminDashboard: React.FC = () => {
               <li>
                 <Button
                   variant="ghost"
-                  className="text-white hover:text-pink-500"
+                  className="text-white hover:text-pink-400 transition-colors duration-300"
                   onClick={handleLogout}
                 >
                   <LogOut className="mr-2 h-4 w-4" />
@@ -308,11 +308,11 @@ const AdminDashboard: React.FC = () => {
           </nav>
         </div>
       </header>
-      <div className="min-h-screen bg-gray-100 p-8">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+      <div className="flex-grow p-8 bg-gradient-to-br from-pink-100 via-white to-pink-100">
+        <h1 className="text-4xl font-bold mb-8 text-pink-600">Admin Dashboard</h1>
 
         {adminData && (
-          <Card className="mb-8">
+          <Card className="mb-8 bg-white bg-opacity-80 shadow-lg hover:shadow-xl transition-shadow duration-300">
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 Admin Information
@@ -395,7 +395,7 @@ const AdminDashboard: React.FC = () => {
           </Card>
         )}
 
-        <Card className="mb-8">
+        <Card className="mb-8 bg-white bg-opacity-80 shadow-lg hover:shadow-xl transition-shadow duration-300">
           <CardHeader>
             <CardTitle>{isEditing ? 'Edit Event' : 'Add New Event'}</CardTitle>
           </CardHeader>
@@ -475,7 +475,7 @@ const AdminDashboard: React.FC = () => {
                 </div>
               )}
               <div className="flex justify-between">
-                <Button type="submit" className="bg-pink-500 text-white">
+                <Button type="submit" className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white transition-all duration-300">
                   {isEditing ? 'Update Event' : 'Add Event'}
                 </Button>
                 {isEditing && (
@@ -494,7 +494,7 @@ const AdminDashboard: React.FC = () => {
           {events.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {events.map((event) => (
-                <Card key={event.id} className="p-4">
+                <Card key={event.id} className="p-4 bg-white bg-opacity-80 shadow-lg hover:shadow-xl transition-shadow duration-300">
                   <h3 className="text-lg font-semibold">{event.name}</h3>
                   <p className="text-sm text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
                   <p className="mt-2">{event.description}</p>
@@ -512,7 +512,7 @@ const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
-      
+
       <footer className="bg-black text-white py-8">
         <div className="container mx-auto px-4 text-center">
           <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
