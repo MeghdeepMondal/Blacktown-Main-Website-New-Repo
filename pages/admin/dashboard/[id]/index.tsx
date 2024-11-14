@@ -505,7 +505,7 @@ const AdminDashboard: React.FC = () => {
                     <p className="mt-2 text-gray-600">Frequency: {event.frequency}</p>
                     <div className="mt-4 flex justify-end space-x-2">
                       <Button onClick={() => handleEditEvent(event)} className="bg-pink-100 text-pink-600 hover:bg-pink-200">Edit</Button>
-                      <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-red-500 hover:bg-red-600">Delete</Button>
+                      <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg">Delete</Button>
                     </div>
                   </CardContent>
                 </Card>
