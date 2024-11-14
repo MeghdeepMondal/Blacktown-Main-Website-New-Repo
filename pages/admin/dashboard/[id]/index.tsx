@@ -173,8 +173,71 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <div>
-      {/* Header and navigation remain unchanged */}
+    <div className="min-h-screen flex flex-col">
+      <header className="bg-black text-white shadow">
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div className="flex items-center">
+            <Image
+              src="/One Heart.png"
+              alt="One Heart Blacktown Logo"
+              width={64}
+              height={64}
+              className="w-16 h-16 object-contain"
+            />
+            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
+          </div>
+          <nav>
+            <ul className="flex space-x-6">
+              <li>
+                <Link href="/" className="text-white hover:text-pink-500">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/opportunities"
+                  className="text-white hover:text-pink-500"
+                >
+                  Opportunities
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-white hover:text-pink-500">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/events" className="text-white hover:text-pink-500">
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-white hover:text-pink-500">
+                  About
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact"
+                  className="text-white hover:text-pink-500"
+                >
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Button
+                  variant="ghost"
+                  className="text-white hover:text-pink-500"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </header>
       <div className="min-h-screen bg-gray-100 p-8">
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
 
@@ -301,7 +364,16 @@ const AdminDashboard: React.FC = () => {
           )}
         </div>
       </div>
-      {/* Footer remains unchanged */}
+      
+      <footer className="bg-black text-white py-8">
+        <div className="container mx-auto px-4 text-center">
+          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
+          <div className="mt-4 flex justify-center items-center">
+            <MapPin className="mr-2" />
+            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
