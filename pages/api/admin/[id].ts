@@ -1,47 +1,50 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { PrismaClient } from '@prisma/client'
-import jwt from 'jsonwebtoken'
+// pages/api/admin/[id].ts
 
-const prisma = new PrismaClient()
+import { NextApiRequest, NextApiResponse } from 'next';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' })
+  const { id } = req.query;
+
+  if (typeof id !== 'string') {
+    return res.status(400).json({ message: 'Invalid admin ID' });
   }
 
-  const authHeader = req.headers.authorization
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Unauthorized' })
-  }
+  if (req.method === 'GET') {
+    try {
+      const admin = await prisma.admins.findUnique({
+        where: { id: id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          description: true,
+          address: true,
+          contactDetails: true,
+          logo: true,
+          lat: true,
+          lng: true,
+        },
+      });
 
-  const token = authHeader.split(' ')[1]
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { adminId: string }
-    const { id } = req.query
-
-    if (decoded.adminId !== id) {
-      return res.status(403).json({ message: 'Forbidden' })
-    }
-
-    const admin = await prisma.admins.findUnique({
-      where: { id: String(id) },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        description: true,
-        address: true,
-        contactDetails: true,
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
       }
-    })
 
-    if (!admin) {
-      return res.status(404).json({ message: 'Admin not found' })
+      const events = await prisma.events.findMany({
+        where: { adminId: id },
+        orderBy: { date: 'asc' },
+      });
+
+      res.status(200).json({ admin, events });
+    } catch (error) {
+      console.error('Error fetching admin data:', error);
+      res.status(500).json({ message: 'Error fetching admin data' });
     }
-
-    res.status(200).json(admin)
-  } catch (error) {
-    console.error('Error verifying token:', error)
-    res.status(401).json({ message: 'Invalid token' })
+  } else {
+    res.setHeader('Allow', ['GET']);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

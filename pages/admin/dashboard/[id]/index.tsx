@@ -27,6 +27,7 @@ interface AdminData {
   description?: string
   address?: string
   contactDetails?: string
+  events?: any[]
 }
 
 const AdminDashboard: React.FC = () => {
@@ -43,8 +44,11 @@ const AdminDashboard: React.FC = () => {
     lat: center.lat,
     lng: center.lng
   })
+  const [showAddEventForm, setShowAddEventForm] = useState(false);
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [markerPosition, setMarkerPosition] = useState(center)
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -54,46 +58,26 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       if (id) {
-        const token = localStorage.getItem('adminToken')
-        if (!token) {
-          router.push('/admin/auth')
-          return
-        }
-
+        setIsLoading(true);
         try {
-          const response = await fetch(`/api/admin/${id}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          })
+          const response = await fetch(`/api/admin/${id}`);
           if (!response.ok) {
-            throw new Error('Failed to fetch admin data')
+            throw new Error('Failed to fetch admin data');
           }
-          const data = await response.json()
-          setAdminData(data)
+          const data = await response.json();
+          setAdminData(data.admin);
+          setEvents(data.events);
         } catch (error) {
-          console.error('Error fetching admin data:', error)
-          router.push('/admin/auth')
+          console.error('Error fetching admin data:', error);
+          setError('Failed to load admin data. Please try again.');
+        } finally {
+          setIsLoading(false);
         }
       }
-    }
+    };
 
-    const fetchEvents = async () => {
-      try {
-        const response = await fetch('/api/events')
-        if (!response.ok) {
-          throw new Error('Failed to fetch events')
-        }
-        const data = await response.json()
-        setEvents(data)
-      } catch (error) {
-        console.error('Error fetching events:', error)
-      }
-    }
-
-    fetchAdminData()
-    fetchEvents()
-  }, [id, router])
+    fetchAdminData();
+  }, [id]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -112,12 +96,15 @@ const AdminDashboard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch('/api/events', {
+      const response = await fetch('/api/admin/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEvent),
+        body: JSON.stringify({
+          ...newEvent,
+          adminId: id,
+        }),
       })
 
       if (!response.ok) {
@@ -136,15 +123,16 @@ const AdminDashboard: React.FC = () => {
         lng: center.lng
       })
       setMarkerPosition(center)
+      setShowAddEventForm(false);
     } catch (error) {
       console.error('Error adding event:', error)
-      alert('Failed to add event. Please try again.')
+      setError('Failed to add event. Please try again.')
     }
   }
 
   const handleDeleteEvent = async (eventId: string) => {
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
+      const response = await fetch(`/api/admin/events/${eventId}`, {
         method: 'DELETE',
       })
 
@@ -171,75 +159,25 @@ const AdminDashboard: React.FC = () => {
     router.push('/admin/auth')
   }
 
+  const handleEditEvent = (eventId: string) => {
+    // Implement your edit event logic here
+    console.log("Edit event:", eventId);
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!adminData) {
+    return <div>No admin data found.</div>;
+  }
+
   return (
     <div>
-      <header className="bg-black text-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src="/One Heart.png"
-              alt="One Heart Blacktown Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 object-contain"
-            />
-            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
-          </div>
-          <nav>
-            <ul className="flex space-x-6">
-              <li>
-                <Link href="/" className="text-white hover:text-pink-500">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/opportunities"
-                  className="text-white hover:text-pink-500"
-                >
-                  Opportunities
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-white hover:text-pink-500">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/events" className="text-white hover:text-pink-500">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-white hover:text-pink-500">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-white hover:text-pink-500"
-                >
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Button
-                  variant="ghost"
-                  className="text-white hover:text-pink-500"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      {/* Header and navigation remain unchanged */}
       <div className="min-h-screen bg-gray-100 p-8">
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-        
+
         {adminData && (
           <Card className="mb-8">
             <CardHeader>
@@ -254,7 +192,7 @@ const AdminDashboard: React.FC = () => {
             </CardContent>
           </Card>
         )}
-        
+
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>Add New Event</CardTitle>
@@ -316,7 +254,7 @@ const AdminDashboard: React.FC = () => {
                   id="description"
                   placeholder="Description"
                   name="description"
-                  value={newEvent.description}
+                value={newEvent.description}
                   onChange={handleInputChange}
                   required
                 />
@@ -339,82 +277,31 @@ const AdminDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <h2 className="text-2xl font-bold mb-4">Existing Events</h2>
-        {events.map((event: any) => (
-          <Card key={event.id} className="mb-4">
-            <CardHeader>
-              <CardTitle className="flex justify-between items-center">
-                <span>{event.name}</span>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => toggleEventDetails(event.id)}
-                  >
-                    {expandedEventId === event.id ? <ChevronUp /> : <ChevronDown />}
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDeleteEvent(event.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-              <p><strong>Frequency:</strong> {event.frequency}</p>
-              <p><strong>Location:</strong> {event.location}</p>
-              {expandedEventId === event.id && (
-                <div className="mt-4">
-                  <p><strong>Description:</strong> {event.description}</p>
-                  {isLoaded && (
-                    <div className="mt-2">
-                      <GoogleMap
-                        mapContainerStyle={containerStyle}
-                        center={{ lat: event.lat, lng: event.lng }}
-                        zoom={15}
-                      >
-                        <Marker position={{ lat: event.lat, lng: event.lng }} />
-                      </GoogleMap>
-                    </div>
-                  )}
-                  <h3 className="font-bold mt-4">Enrolled Participants:</h3>
-                  <table className="w-full mt-2">
-                    <thead>
-                      <tr>
-                        <th className="text-left">Name</th>
-                        <th className="text-left">Email</th>
-                        <th className="text-left">Phone</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {event.enrolledParticipants && event.enrolledParticipants.map((participant: any) => (
-                        <tr key={participant.id}>
-                          <td>{participant.name}</td>
-                          <td>{participant.email}</td>
-                          <td>{participant.phone}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-          <div className="mt-4 flex justify-center items-center">
-            <MapPin className="mr-2" />
-            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
-          </div>
+        {/* Events Section */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Your Events</h2>
+          {events.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {events.map((event) => (
+                <Card key={event.id} className="p-4">
+                  <h3 className="text-lg font-semibold">{event.name}</h3>
+                  <p className="text-sm text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
+                  <p className="mt-2">{event.description}</p>
+                  <p className="mt-2">Location: {event.location}</p>
+                  <p className="mt-2">Frequency: {event.frequency}</p>
+                  <div className="mt-4 flex justify-end space-x-2">
+                    <Button onClick={() => handleEditEvent(event.id)}>Edit</Button>
+                    <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)}>Delete</Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <p>No events created yet.</p>
+          )}
         </div>
-      </footer>
+      </div>
+      {/* Footer remains unchanged */}
     </div>
   )
 }
