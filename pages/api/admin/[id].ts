@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const admin = await prisma.admins.findUnique({
-        where: { id: id },
+        where: { id },
         select: {
           id: true,
           name: true,
@@ -43,8 +43,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('Error fetching admin data:', error);
       res.status(500).json({ message: 'Error fetching admin data' });
     }
+  } else if (req.method === 'PUT') {
+    try {
+      const { name, email, description, address, contactDetails } = req.body;
+
+      const updatedAdmin = await prisma.admins.update({
+        where: { id },
+        data: {
+          name,
+          email,
+          description,
+          address,
+          contactDetails,
+          updatedAt: new Date(),
+        },
+      });
+
+      res.status(200).json(updatedAdmin);
+    } catch (error) {
+      console.error('Error updating admin information:', error);
+      res.status(500).json({ message: 'Error updating admin information' });
+    }
   } else {
-    res.setHeader('Allow', ['GET']);
+    res.setHeader('Allow', ['GET', 'PUT']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 
 const containerStyle = {
@@ -27,7 +27,9 @@ interface AdminData {
   description?: string
   address?: string
   contactDetails?: string
-  events?: any[]
+  logo?: string
+  lat?: number
+  lng?: number
 }
 
 interface EventData {
@@ -62,6 +64,8 @@ const AdminDashboard: React.FC = () => {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
+  const [isEditingAdmin, setIsEditingAdmin] = useState(false)
+  const [editedAdminData, setEditedAdminData] = useState<AdminData | null>(null)
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -79,6 +83,7 @@ const AdminDashboard: React.FC = () => {
           }
           const data = await response.json()
           setAdminData(data.admin)
+          setEditedAdminData(data.admin)
           setEvents(data.events)
         } catch (error) {
           console.error('Error fetching admin data:', error)
@@ -95,6 +100,11 @@ const AdminDashboard: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setNewEvent(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleAdminInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setEditedAdminData(prev => ({ ...prev!, [name]: value }))
   }
 
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
@@ -191,6 +201,39 @@ const AdminDashboard: React.FC = () => {
     setIsEditing(false)
   }
 
+  const handleEditAdmin = () => {
+    setIsEditingAdmin(true)
+  }
+
+  const handleCancelEditAdmin = () => {
+    setIsEditingAdmin(false)
+    setEditedAdminData(adminData)
+  }
+
+  const handleSubmitAdminEdit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch(`/api/admin/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editedAdminData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update admin information')
+      }
+
+      const updatedAdmin = await response.json()
+      setAdminData(updatedAdmin)
+      setIsEditingAdmin(false)
+    } catch (error) {
+      console.error('Error updating admin information:', error)
+      setError('Failed to update admin information. Please try again.')
+    }
+  }
+
   if (isLoading) {
     return <div>Loading...</div>
   }
@@ -271,14 +314,83 @@ const AdminDashboard: React.FC = () => {
         {adminData && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Admin Information</CardTitle>
+              <CardTitle className="flex justify-between items-center">
+                Admin Information
+                {!isEditingAdmin && (
+                  <Button onClick={handleEditAdmin} variant="outline" size="sm">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit
+                  </Button>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <p><strong>Name:</strong> {adminData.name}</p>
-              <p><strong>Email:</strong> {adminData.email}</p>
-              {adminData.description && <p><strong>Description:</strong> {adminData.description}</p>}
-              {adminData.address && <p><strong>Address:</strong> {adminData.address}</p>}
-              {adminData.contactDetails && <p><strong>Contact Details:</strong> {adminData.contactDetails}</p>}
+              {isEditingAdmin ? (
+                <form onSubmit={handleSubmitAdminEdit} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={editedAdminData?.name}
+                      onChange={handleAdminInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={editedAdminData?.email}
+                      onChange={handleAdminInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="description">Description</Label>
+                    <Textarea
+                      id="description"
+                      name="description"
+                      value={editedAdminData?.description || ''}
+                      onChange={handleAdminInputChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      id="address"
+                      name="address"
+                      value={editedAdminData?.address || ''}
+                      onChange={handleAdminInputChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="contactDetails">Contact Details</Label>
+                    <Input
+                      id="contactDetails"
+                      name="contactDetails"
+                      value={editedAdminData?.contactDetails || ''}
+                      onChange={handleAdminInputChange}
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button type="submit">Save Changes</Button>
+                    <Button type="button" variant="outline" onClick={handleCancelEditAdmin}>
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <p><strong>Name:</strong> {adminData.name}</p>
+                  <p><strong>Email:</strong> {adminData.email}</p>
+                  {adminData.description && <p><strong>Description:</strong> {adminData.description}</p>}
+                  {adminData.address && <p><strong>Address:</strong> {adminData.address}</p>}
+                  {adminData.contactDetails && <p><strong>Contact Details:</strong> {adminData.contactDetails}</p>}
+                </>
+              )}
             </CardContent>
           </Card>
         )}
