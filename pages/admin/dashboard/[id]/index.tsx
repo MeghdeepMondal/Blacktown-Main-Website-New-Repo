@@ -308,23 +308,23 @@ const AdminDashboard: React.FC = () => {
           </nav>
         </div>
       </header>
-      <div className="flex-grow p-8 bg-gradient-to-br from-pink-100 via-white to-pink-100">
+      <div className="flex-grow p-8 bg-gradient-to-br from-pink-50 via-white to-pink-100">
         <h1 className="text-4xl font-bold mb-8 text-pink-600">Admin Dashboard</h1>
 
         {adminData && (
-          <Card className="mb-8 bg-white bg-opacity-80 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader>
+          <Card className="mb-8 bg-gradient-to-br from-white to-pink-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 rounded-lg overflow-hidden">
+            <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800 rounded-t-lg">
               <CardTitle className="flex justify-between items-center">
                 Admin Information
                 {!isEditingAdmin && (
-                  <Button onClick={handleEditAdmin} variant="outline" size="sm">
+                  <Button onClick={handleEditAdmin} variant="secondary" size="sm" className="text-pink-600 bg-white hover:bg-pink-100">
                     <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </Button>
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-6">
               {isEditingAdmin ? (
                 <form onSubmit={handleSubmitAdminEdit} className="space-y-4">
                   <div className="space-y-2">
@@ -395,11 +395,11 @@ const AdminDashboard: React.FC = () => {
           </Card>
         )}
 
-        <Card className="mb-8 bg-white bg-opacity-80 shadow-lg hover:shadow-xl transition-shadow duration-300">
-          <CardHeader>
+        <Card className="mb-8 bg-gradient-to-br from-white to-pink-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 rounded-lg overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800 rounded-t-lg">
             <CardTitle>{isEditing ? 'Edit Event' : 'Add New Event'}</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Event Name</Label>
@@ -474,12 +474,12 @@ const AdminDashboard: React.FC = () => {
                   </GoogleMap>
                 </div>
               )}
-              <div className="flex justify-between">
-                <Button type="submit" className="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white transition-all duration-300">
+              <div className="flex justify-between mt-6">
+                <Button type="submit" className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg">
                   {isEditing ? 'Update Event' : 'Add Event'}
                 </Button>
                 {isEditing && (
-                  <Button type="button" variant="outline" onClick={resetForm}>
+                  <Button type="button" variant="outline" onClick={resetForm} className="border-pink-500 text-pink-600 hover:bg-pink-50">
                     Cancel
                   </Button>
                 )}
@@ -492,18 +492,22 @@ const AdminDashboard: React.FC = () => {
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Your Events</h2>
           {events.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {events.map((event) => (
-                <Card key={event.id} className="p-4 bg-white bg-opacity-80 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <h3 className="text-lg font-semibold">{event.name}</h3>
-                  <p className="text-sm text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
-                  <p className="mt-2">{event.description}</p>
-                  <p className="mt-2">Location: {event.location}</p>
-                  <p className="mt-2">Frequency: {event.frequency}</p>
-                  <div className="mt-4 flex justify-end space-x-2">
-                    <Button onClick={() => handleEditEvent(event)}>Edit</Button>
-                    <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)}>Delete</Button>
-                  </div>
+                <Card key={event.id} className="bg-gradient-to-br from-white to-pink-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 rounded-lg overflow-hidden">
+                  <CardHeader className="bg-gradient-to-r from-pink-100 to-pink-200 text-pink-800">
+                    <CardTitle className="text-lg font-semibold">{event.name}</CardTitle>
+                    <p className="text-sm text-pink-600">{new Date(event.date).toLocaleDateString()}</p>
+                  </CardHeader>
+                  <CardContent className="p-4">
+                    <p className="mt-2 text-gray-600">{event.description}</p>
+                    <p className="mt-2 text-gray-600">Location: {event.location}</p>
+                    <p className="mt-2 text-gray-600">Frequency: {event.frequency}</p>
+                    <div className="mt-4 flex justify-end space-x-2">
+                      <Button onClick={() => handleEditEvent(event)} className="bg-pink-100 text-pink-600 hover:bg-pink-200">Edit</Button>
+                      <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-red-500 hover:bg-red-600">Delete</Button>
+                    </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>
