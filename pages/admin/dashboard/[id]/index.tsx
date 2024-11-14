@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 
 const containerStyle = {
@@ -30,12 +30,24 @@ interface AdminData {
   events?: any[]
 }
 
+interface EventData {
+  id: string
+  name: string
+  date: string
+  frequency: string
+  location: string
+  description: string
+  lat: number
+  lng: number
+}
+
 const AdminDashboard: React.FC = () => {
   const router = useRouter()
   const { id } = router.query
   const [adminData, setAdminData] = useState<AdminData | null>(null)
-  const [events, setEvents] = useState([])
-  const [newEvent, setNewEvent] = useState({
+  const [events, setEvents] = useState<EventData[]>([])
+  const [newEvent, setNewEvent] = useState<EventData>({
+    id: '',
     name: '',
     date: '',
     frequency: '',
@@ -44,11 +56,12 @@ const AdminDashboard: React.FC = () => {
     lat: center.lat,
     lng: center.lng
   })
-  const [showAddEventForm, setShowAddEventForm] = useState(false);
+  const [showAddEventForm, setShowAddEventForm] = useState(false)
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [markerPosition, setMarkerPosition] = useState(center)
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isEditing, setIsEditing] = useState(false)
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -58,26 +71,26 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       if (id) {
-        setIsLoading(true);
+        setIsLoading(true)
         try {
-          const response = await fetch(`/api/admin/${id}`);
+          const response = await fetch(`/api/admin/${id}`)
           if (!response.ok) {
-            throw new Error('Failed to fetch admin data');
+            throw new Error('Failed to fetch admin data')
           }
-          const data = await response.json();
-          setAdminData(data.admin);
-          setEvents(data.events);
+          const data = await response.json()
+          setAdminData(data.admin)
+          setEvents(data.events)
         } catch (error) {
-          console.error('Error fetching admin data:', error);
-          setError('Failed to load admin data. Please try again.');
+          console.error('Error fetching admin data:', error)
+          setError('Failed to load admin data. Please try again.')
         } finally {
-          setIsLoading(false);
+          setIsLoading(false)
         }
       }
-    };
+    }
 
-    fetchAdminData();
-  }, [id]);
+    fetchAdminData()
+  }, [id])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -96,8 +109,10 @@ const AdminDashboard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const response = await fetch('/api/admin/events', {
-        method: 'POST',
+      const url = isEditing ? `/api/admin/events/${newEvent.id}` : '/api/admin/events'
+      const method = isEditing ? 'PUT' : 'POST'
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -108,25 +123,19 @@ const AdminDashboard: React.FC = () => {
       })
 
       if (!response.ok) {
-        throw new Error('Failed to add event')
+        throw new Error(`Failed to ${isEditing ? 'update' : 'add'} event`)
       }
 
-      const addedEvent = await response.json()
-      setEvents(prev => [...prev, addedEvent])
-      setNewEvent({
-        name: '',
-        date: '',
-        frequency: '',
-        location: '',
-        description: '',
-        lat: center.lat,
-        lng: center.lng
-      })
-      setMarkerPosition(center)
-      setShowAddEventForm(false);
+      const eventData = await response.json()
+      if (isEditing) {
+        setEvents(prev => prev.map(event => event.id === eventData.id ? eventData : event))
+      } else {
+        setEvents(prev => [...prev, eventData])
+      }
+      resetForm()
     } catch (error) {
-      console.error('Error adding event:', error)
-      setError('Failed to add event. Please try again.')
+      console.error(`Error ${isEditing ? 'updating' : 'adding'} event:`, error)
+      setError(`Failed to ${isEditing ? 'update' : 'add'} event. Please try again.`)
     }
   }
 
@@ -159,17 +168,35 @@ const AdminDashboard: React.FC = () => {
     router.push('/admin/auth')
   }
 
-  const handleEditEvent = (eventId: string) => {
-    // Implement your edit event logic here
-    console.log("Edit event:", eventId);
-  };
+  const handleEditEvent = (event: EventData) => {
+    setNewEvent(event)
+    setMarkerPosition({ lat: event.lat, lng: event.lng })
+    setIsEditing(true)
+    setShowAddEventForm(true)
+  }
+
+  const resetForm = () => {
+    setNewEvent({
+      id: '',
+      name: '',
+      date: '',
+      frequency: '',
+      location: '',
+      description: '',
+      lat: center.lat,
+      lng: center.lng
+    })
+    setMarkerPosition(center)
+    setShowAddEventForm(false)
+    setIsEditing(false)
+  }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   if (!adminData) {
-    return <div>No admin data found.</div>;
+    return <div>No admin data found.</div>
   }
 
   return (
@@ -258,7 +285,7 @@ const AdminDashboard: React.FC = () => {
 
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle>Add New Event</CardTitle>
+            <CardTitle>{isEditing ? 'Edit Event' : 'Add New Event'}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -317,7 +344,7 @@ const AdminDashboard: React.FC = () => {
                   id="description"
                   placeholder="Description"
                   name="description"
-                value={newEvent.description}
+                  value={newEvent.description}
                   onChange={handleInputChange}
                   required
                 />
@@ -335,7 +362,16 @@ const AdminDashboard: React.FC = () => {
                   </GoogleMap>
                 </div>
               )}
-              <Button type="submit" className="w-full bg-pink-500 text-white">Add Event</Button>
+              <div className="flex justify-between">
+                <Button type="submit" className="bg-pink-500 text-white">
+                  {isEditing ? 'Update Event' : 'Add Event'}
+                </Button>
+                {isEditing && (
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    Cancel
+                  </Button>
+                )}
+              </div>
             </form>
           </CardContent>
         </Card>
@@ -353,7 +389,7 @@ const AdminDashboard: React.FC = () => {
                   <p className="mt-2">Location: {event.location}</p>
                   <p className="mt-2">Frequency: {event.frequency}</p>
                   <div className="mt-4 flex justify-end space-x-2">
-                    <Button onClick={() => handleEditEvent(event.id)}>Edit</Button>
+                    <Button onClick={() => handleEditEvent(event)}>Edit</Button>
                     <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)}>Delete</Button>
                   </div>
                 </Card>
