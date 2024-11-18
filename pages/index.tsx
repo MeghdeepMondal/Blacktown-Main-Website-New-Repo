@@ -17,6 +17,7 @@ import {
   BookOpen,
   Info,
   Mail,
+  LogOut,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -38,7 +39,7 @@ export default function Homepage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
       <header className="bg-black text-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center">
@@ -131,129 +132,49 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="opportunities" className="py-16 bg-white">
+        <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-black">
-              Opportunities
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-white shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Briefcase className="mr-2 text-pink-500" />
-                      Opportunity {i}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Description of opportunity {i}</p>
-                    <Button className="mt-4 bg-pink-500 text-white hover:bg-pink-600">
-                      Learn More
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="blog" className="bg-gray-200 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-black">
-              Latest Blog Posts
-            </h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[1, 2].map((i) => (
-                <Card key={i} className="bg-white shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <BookOpen className="mr-2 text-pink-500" />
-                      Blog Post {i}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Summary of blog post {i}</p>
-                    <Button className="mt-4 bg-pink-500 text-white hover:bg-pink-600">
-                      Read More
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="events" className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-black">
-              Upcoming Events
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-white shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Calendar className="mr-2 text-pink-500" />
-                      Event {i}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Date: June {10 + i}, 2023</p>
-                    <p>Time: 7:00 PM</p>
-                    <p>Location: Church {i}</p>
-                    <Button className="mt-4 bg-pink-500 text-white hover:bg-pink-600">
-                      Learn More
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="about" className="bg-gray-200 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-black">
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               About One Heart Blacktown
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
-              <Card className="bg-white shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Users className="mr-2 text-pink-500" />
+              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                  <CardTitle className="flex items-center text-pink-800">
+                    <Users className="mr-2 text-pink-600" />
                     Our Members
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>
+                  <p className="text-pink-800">
                     Information about the member churches and organizations that
                     make up One Heart Blacktown.
                   </p>
                 </CardContent>
               </Card>
-              <Card className="bg-white shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Heart className="mr-2 text-pink-500" />
+              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                  <CardTitle className="flex items-center text-pink-800">
+                    <Heart className="mr-2 text-pink-600" />
                     Our Shared Values
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>
+                  <p className="text-pink-800">
                     The core values that unite our members: Prayer, Unity, and
                     Mission.
                   </p>
                 </CardContent>
               </Card>
-              <Card className="bg-white shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Info className="mr-2 text-pink-500" />
+              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                  <CardTitle className="flex items-center text-pink-800">
+                    <Info className="mr-2 text-pink-600" />
                     Projects
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>
+                  <p className="text-pink-800">
                     Overview of current and past projects undertaken by One
                     Heart Blacktown.
                   </p>
@@ -263,16 +184,116 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="contact" className="py-16 bg-white">
+        <section className="bg-gradient-to-br from-white to-pink-100 py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+              Featured Video
+            </h2>
+            <div className="flex justify-center">
+              <iframe 
+                src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Foneheartblacktown%2Fvideos%2F414025854754518%2F&show_text=false&width=267&t=0" 
+                width="267" 
+                height="476" 
+                style={{border: 'none', overflow: 'hidden'}}
+                scrolling="no" 
+                frameBorder="0" 
+                allowFullScreen={true} 
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              ></iframe>
+            </div>
+          </div>
+        </section>
+
+        <section id="opportunities" className="bg-gradient-to-br from-pink-100 to-white py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+              Opportunities
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                    <CardTitle className="flex items-center text-pink-800">
+                      <Briefcase className="mr-2 text-pink-600" />
+                      Opportunity {i}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-pink-800">Description of opportunity {i}</p>
+                    <Button className="mt-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300">
+                      Learn More
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+              Latest Blog Posts
+            </h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              {[1, 2].map((i) => (
+                <Card key={i} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                    <CardTitle className="flex items-center text-pink-800">
+                      <BookOpen className="mr-2 text-pink-600" />
+                      Blog Post {i}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-pink-800">Summary of blog post {i}</p>
+                    <Button className="mt-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300">
+                      Read More
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="events" className="bg-gradient-to-br from-pink-100 to-white py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+              Upcoming Events
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                    <CardTitle className="flex items-center text-pink-800">
+                      <Calendar className="mr-2 text-pink-600" />
+                      Event {i}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-pink-800">Date: June {10 + i}, 2023</p>
+                    <p className="text-pink-800">Time: 7:00 PM</p>
+                    <p className="text-pink-800">Location: Church {i}</p>
+                    <Button className="mt-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300">
+                      Learn More
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="bg-gradient-to-br from-white to-pink-100 py-16">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-8 text-black">Contact Us</h2>
-            <p className="text-lg mb-8 text-black">
+            <h2 className="text-3xl font-bold mb-8 text-pink-800">Contact Us</h2>
+            <p className="text-lg mb-8 text-pink-700">
               Get in touch to learn more about our mission or to get involved.
             </p>
             <Link href="/contact">
               <Button
                 size="lg"
-                className="flex items-center mx-auto bg-pink-500 text-white hover:bg-pink-600"
+                className="flex items-center mx-auto bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300"
               >
                 <Mail className="mr-2" />
                 Contact Us
