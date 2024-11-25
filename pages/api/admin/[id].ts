@@ -1,7 +1,5 @@
-// pages/api/admin/[id].ts
-
 import { NextApiRequest, NextApiResponse } from 'next';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -15,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const admin = await prisma.admins.findUnique({
-        where: { id },
+        where: { id: id },
         select: {
           id: true,
           name: true,
@@ -47,6 +45,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { name, email, description, address, contactDetails } = req.body;
 
+      // Check if email already exists
+      const existingAdmin = await prisma.admins.findUnique({
+        where: { email },
+      });
+
+      if (existingAdmin && existingAdmin.id !== id) {
+        return res.status(400).json({ message: 'Email already in use by another admin' });
+      }
+
       const updatedAdmin = await prisma.admins.update({
         where: { id },
         data: {
@@ -61,6 +68,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       res.status(200).json(updatedAdmin);
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        return res.status(400).json({ message: 'Email already in use by another admin' });
+      }
       console.error('Error updating admin information:', error);
       res.status(500).json({ message: 'Error updating admin information' });
     }

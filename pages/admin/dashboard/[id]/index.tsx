@@ -66,6 +66,7 @@ const AdminDashboard: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isEditingAdmin, setIsEditingAdmin] = useState(false)
   const [editedAdminData, setEditedAdminData] = useState<AdminData | null>(null)
+  const [emailError, setEmailError] = useState(''); // Added email error state
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -211,7 +212,8 @@ const AdminDashboard: React.FC = () => {
   }
 
   const handleSubmitAdminEdit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+    setEmailError(''); // Clear email error before submission
     try {
       const response = await fetch(`/api/admin/${id}`, {
         method: 'PUT',
@@ -219,20 +221,25 @@ const AdminDashboard: React.FC = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(editedAdminData),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error('Failed to update admin information')
+        const errorData = await response.json();
+        if (response.status === 400 && errorData.message.includes('Email already in use')) {
+          setEmailError(errorData.message); // Set email error if email is already in use
+          return;
+        }
+        throw new Error('Failed to update admin information');
       }
 
-      const updatedAdmin = await response.json()
-      setAdminData(updatedAdmin)
-      setIsEditingAdmin(false)
+      const updatedAdmin = await response.json();
+      setAdminData(updatedAdmin);
+      setIsEditingAdmin(false);
     } catch (error) {
-      console.error('Error updating admin information:', error)
-      setError('Failed to update admin information. Please try again.')
+      console.error('Error updating admin information:', error);
+      setError('Failed to update admin information. Please try again.');
     }
-  }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -347,6 +354,7 @@ const AdminDashboard: React.FC = () => {
                       onChange={handleAdminInputChange}
                       required
                     />
+                    {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>} {/* Added email error display */}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Description</Label>
@@ -505,7 +513,7 @@ const AdminDashboard: React.FC = () => {
                     <p className="mt-2 text-gray-600">Frequency: {event.frequency}</p>
                     <div className="mt-4 flex justify-end space-x-2">
                       <Button onClick={() => handleEditEvent(event)} className="bg-pink-100 text-pink-600 hover:bg-pink-200">Edit</Button>
-                      <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg">Delete</Button>
+                      <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-red-500 hover:bg-red-600">Delete</Button>
                     </div>
                   </CardContent>
                 </Card>
