@@ -36,6 +36,7 @@ model admins {
   name           String
   password       String
   updatedAt      DateTime? @db.Date
+  events         events[]
 }
 
 model events {
@@ -49,6 +50,8 @@ model events {
   location    String
   name        String
   updatedAt   DateTime @db.Date
+  adminId     String   @db.ObjectId
+  admin       admins   @relation(fields: [adminId], references: [id])
 }
 
 model members {
