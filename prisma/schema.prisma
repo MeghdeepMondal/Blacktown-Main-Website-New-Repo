@@ -52,6 +52,7 @@ model events {
   updatedAt   DateTime @db.Date
   adminId     String   @db.ObjectId
   admin       admins   @relation(fields: [adminId], references: [id])
+  photo       String?  // New field for storing Cloudinary URL
 }
 
 model members {

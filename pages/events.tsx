@@ -18,7 +18,7 @@ interface Event {
   location: string
   lat: number
   lng: number
-  image?: string
+  photo?: string
   frequency: string
 }
 
@@ -219,7 +219,7 @@ const EventsPage: React.FC = () => {
                   <CardHeader className="p-0">
                     <div className="relative h-48 w-full">
                       <Image
-                        src={event.image || "/placeholder.svg?height=400&width=600"}
+                        src={event.photo || "/placeholder.svg?height=400&width=600"}
                         alt={event.name}
                         fill
                         className="object-cover rounded-t-lg"

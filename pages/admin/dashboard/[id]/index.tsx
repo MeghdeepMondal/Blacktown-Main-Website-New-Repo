@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Upload } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 
 const containerStyle = {
@@ -41,6 +41,7 @@ interface EventData {
   description: string
   lat: number
   lng: number
+  photo?: string
 }
 
 const AdminDashboard: React.FC = () => {
@@ -66,7 +67,8 @@ const AdminDashboard: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isEditingAdmin, setIsEditingAdmin] = useState(false)
   const [editedAdminData, setEditedAdminData] = useState<AdminData | null>(null)
-  const [emailError, setEmailError] = useState(''); // Added email error state
+  const [emailError, setEmailError] = useState('')
+  const [eventPhoto, setEventPhoto] = useState<File | null>(null)
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -120,17 +122,25 @@ const AdminDashboard: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const url = isEditing ? `/api/admin/events/${newEvent.id}` : '/api/admin/events'
+      const formData = new FormData()
+      formData.append('name', newEvent.name)
+      formData.append('date', newEvent.date)
+      formData.append('frequency', newEvent.frequency)
+      formData.append('location', newEvent.location)
+      formData.append('description', newEvent.description)
+      formData.append('lat', newEvent.lat.toString())
+      formData.append('lng', newEvent.lng.toString())
+      formData.append('adminId', id as string)
+      
+      if (eventPhoto) {
+        formData.append('photo', eventPhoto)
+      }
+
+      const url = isEditing ? `/api/admin/events/${newEvent.id}` : '/api/events'
       const method = isEditing ? 'PUT' : 'POST'
       const response = await fetch(url, {
         method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...newEvent,
-          adminId: id,
-        }),
+        body: formData,
       })
 
       if (!response.ok) {
@@ -200,6 +210,7 @@ const AdminDashboard: React.FC = () => {
     setMarkerPosition(center)
     setShowAddEventForm(false)
     setIsEditing(false)
+    setEventPhoto(null)
   }
 
   const handleEditAdmin = () => {
@@ -213,7 +224,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleSubmitAdminEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setEmailError(''); // Clear email error before submission
+    setEmailError('');
     try {
       const response = await fetch(`/api/admin/${id}`, {
         method: 'PUT',
@@ -226,7 +237,7 @@ const AdminDashboard: React.FC = () => {
       if (!response.ok) {
         const errorData = await response.json();
         if (response.status === 400 && errorData.message.includes('Email already in use')) {
-          setEmailError(errorData.message); // Set email error if email is already in use
+          setEmailError(errorData.message);
           return;
         }
         throw new Error('Failed to update admin information');
@@ -240,6 +251,12 @@ const AdminDashboard: React.FC = () => {
       setError('Failed to update admin information. Please try again.');
     }
   };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setEventPhoto(e.target.files[0])
+    }
+  }
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -354,7 +371,7 @@ const AdminDashboard: React.FC = () => {
                       onChange={handleAdminInputChange}
                       required
                     />
-                    {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>} {/* Added email error display */}
+                    {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Description</Label>
@@ -469,6 +486,15 @@ const AdminDashboard: React.FC = () => {
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="photo">Event Photo</Label>
+                <Input
+                  id="photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                />
+              </div>
               {isLoaded && (
                 <div className="space-y-2">
                   <Label>Event Location (Click to set)</Label>
@@ -496,7 +522,6 @@ const AdminDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Events Section */}
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Your Events</h2>
           {events.length > 0 ? (
@@ -508,6 +533,17 @@ const AdminDashboard: React.FC = () => {
                     <p className="text-sm text-pink-600">{new Date(event.date).toLocaleDateString()}</p>
                   </CardHeader>
                   <CardContent className="p-4">
+                    {event.photo && (
+                      <div className="mb-4">
+                        <Image
+                          src={event.photo}
+                          alt={event.name}
+                          width={300}
+                          height={200}
+                          className="rounded-lg object-cover"
+                        />
+                      </div>
+                    )}
                     <p className="mt-2 text-gray-600">{event.description}</p>
                     <p className="mt-2 text-gray-600">Location: {event.location}</p>
                     <p className="mt-2 text-gray-600">Frequency: {event.frequency}</p>
