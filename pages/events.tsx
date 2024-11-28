@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Slider } from "@/components/ui/slider"
+import { Slider, SliderTrack, SliderRange, SliderThumb } from "@/components/ui/slider"
 import { MapPin, Calendar } from 'lucide-react'
 
 // Types
@@ -183,19 +183,22 @@ const EventsPage: React.FC = () => {
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-pink-800 mb-4">Events Near You</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-pink-600 font-medium">Radius: {radius[0]}km</span>
-            <div className="w-64">
-              <Slider
-                defaultValue={[5]}
-                max={50}
-                min={1}
-                step={1}
-                value={radius}
-                onValueChange={setRadius}
-                className="w-full"
-              />
-            </div>
+          <div className="flex items-center gap-4 bg-white p-4 rounded-lg shadow-md">
+            <span className="text-pink-600 font-medium whitespace-nowrap">Radius: {radius[0]}km</span>
+            <Slider
+              defaultValue={[5]}
+              max={50}
+              min={1}
+              step={1}
+              value={radius}
+              onValueChange={setRadius}
+              className="w-full"
+            >
+              <SliderTrack className="bg-pink-200">
+                <SliderRange className="bg-pink-500" />
+              </SliderTrack>
+              <SliderThumb className="border-2 border-pink-500 w-5 h-5" />
+            </Slider>
           </div>
         </div>
 
