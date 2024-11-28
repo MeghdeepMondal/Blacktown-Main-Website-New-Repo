@@ -63,6 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             lat: true,
             lng: true,
             photo: true,
+            registrationLink: true,
             createdAt: true,
             updatedAt: true,
           },
@@ -104,7 +105,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
 
           try {
-            const { name, date, frequency, location, description, lat, lng, adminId } = fields
+            const { name, date, frequency, location, description, lat, lng, adminId, registrationLink } = fields
 
             let photoUrl
             if (files.photo) {
@@ -127,6 +128,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 lat: parseFloat(Array.isArray(lat) ? lat[0] : lat),
                 lng: parseFloat(Array.isArray(lng) ? lng[0] : lng),
                 adminId: Array.isArray(adminId) ? adminId[0] : adminId,
+                registrationLink: Array.isArray(registrationLink) ? registrationLink[0] : registrationLink,
                 photo: photoUrl,
                 createdAt: now,
                 updatedAt: now,

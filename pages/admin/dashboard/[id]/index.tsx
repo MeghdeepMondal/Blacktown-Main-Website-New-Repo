@@ -42,6 +42,7 @@ interface EventData {
   lat: number
   lng: number
   photo?: string
+  registrationLink?: string
 }
 
 const AdminDashboard: React.FC = () => {
@@ -57,7 +58,8 @@ const AdminDashboard: React.FC = () => {
     location: '',
     description: '',
     lat: center.lat,
-    lng: center.lng
+    lng: center.lng,
+    registrationLink: ''
   })
   const [showAddEventForm, setShowAddEventForm] = useState(false)
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
@@ -131,6 +133,7 @@ const AdminDashboard: React.FC = () => {
       formData.append('lat', newEvent.lat.toString())
       formData.append('lng', newEvent.lng.toString())
       formData.append('adminId', id as string)
+      formData.append('registrationLink', newEvent.registrationLink || '')
       
       if (eventPhoto) {
         formData.append('photo', eventPhoto)
@@ -205,7 +208,8 @@ const AdminDashboard: React.FC = () => {
       location: '',
       description: '',
       lat: center.lat,
-      lng: center.lng
+      lng: center.lng,
+      registrationLink: ''
     })
     setMarkerPosition(center)
     setShowAddEventForm(false)
@@ -487,6 +491,16 @@ const AdminDashboard: React.FC = () => {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="registrationLink">Registration Link</Label>
+                <Input
+                  id="registrationLink"
+                  placeholder="Registration Link (e.g., Google Forms URL)"
+                  name="registrationLink"
+                  value={newEvent.registrationLink}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="photo">Event Photo</Label>
                 <Input
                   id="photo"
@@ -547,6 +561,11 @@ const AdminDashboard: React.FC = () => {
                     <p className="mt-2 text-gray-600">{event.description}</p>
                     <p className="mt-2 text-gray-600">Location: {event.location}</p>
                     <p className="mt-2 text-gray-600">Frequency: {event.frequency}</p>
+                    {event.registrationLink && (
+                      <p className="mt-2 text-gray-600">
+                        Registration: <a href={event.registrationLink} target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:underline">Link</a>
+                      </p>
+                    )}
                     <div className="mt-4 flex justify-end space-x-2">
                       <Button onClick={() => handleEditEvent(event)} className="bg-pink-100 text-pink-600 hover:bg-pink-200">Edit</Button>
                       <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-red-500 hover:bg-red-600">Delete</Button>

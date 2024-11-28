@@ -7,7 +7,7 @@ import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
-import { MapPin, Calendar, Heart } from 'lucide-react'
+import { MapPin, Calendar } from 'lucide-react'
 
 // Types
 interface Event {
@@ -20,6 +20,7 @@ interface Event {
   lng: number
   photo?: string
   frequency: string
+  registrationLink?: string
 }
 
 const containerStyle = {
@@ -37,7 +38,6 @@ const EventsPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([])
   const [radius, setRadius] = useState([5]) // in kilometers
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([])
-  const [favorites, setFavorites] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -120,17 +120,6 @@ const EventsPage: React.FC = () => {
     }
   }, [events, userLocation, radius])
 
-  const toggleFavorite = (eventId: string) => {
-    setFavorites(prev => {
-      const newFavorites = new Set(prev)
-      if (newFavorites.has(eventId)) {
-        newFavorites.delete(eventId)
-      } else {
-        newFavorites.add(eventId)
-      }
-      return newFavorites
-    })
-  }
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>
@@ -224,18 +213,6 @@ const EventsPage: React.FC = () => {
                         fill
                         className="object-cover rounded-t-lg"
                       />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                        onClick={() => toggleFavorite(event.id)}
-                      >
-                        <Heart
-                          className={`h-5 w-5 ${
-                            favorites.has(event.id) ? 'fill-pink-500 text-pink-500' : 'text-gray-500'
-                          }`}
-                        />
-                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="p-4">
@@ -250,6 +227,15 @@ const EventsPage: React.FC = () => {
                         <MapPin className="h-4 w-4 mr-1" />
                         {event.location}
                       </div>
+                    </div>
+                    <div className="mt-4">
+                      <Button
+                        variant="default"
+                        className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                        onClick={() => window.open(event.registrationLink, '_blank')}
+                      >
+                        Register
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
