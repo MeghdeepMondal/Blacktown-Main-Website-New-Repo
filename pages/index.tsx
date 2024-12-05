@@ -9,8 +9,9 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut, ExternalLink } from 'lucide-react';
+import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut, ExternalLink, User } from 'lucide-react';
 import { useState, useEffect } from "react";
+import axios from 'axios';
 
 const images = [
   "/caro4.png?height=1080&width=1920",
@@ -26,6 +27,24 @@ interface Event {
   location: string
   photo?: string
   registrationLink?: string
+}
+
+interface BlogPost {
+  id: number;
+  attributes: {
+    Title: string;
+    Content: Array<{ type: string; children: Array<{ text: string }> }>;
+    Author: string;
+    PublishDate: string;
+    Slug: string;
+    FeaturedImage: {
+      data?: {
+        attributes?: {
+          url: string;
+        };
+      };
+    };
+  };
 }
 
 // Mock data for featured members
@@ -56,6 +75,7 @@ const featuredMembers = [
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
+  const [latestBlogPosts, setLatestBlogPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -81,6 +101,22 @@ export default function Homepage() {
 
     fetchUpcomingEvents()
   }, [])
+
+  useEffect(() => {
+    const fetchLatestBlogPosts = async () => {
+      try {
+        const response = await axios.get('/api/blog-posts?limit=3');
+        const sortedPosts = response.data.data
+          .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+          .slice(0, 3);
+        setLatestBlogPosts(sortedPosts);
+      } catch (error) {
+        console.error('Error fetching latest blog posts:', error);
+      }
+    };
+
+    fetchLatestBlogPosts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
@@ -247,23 +283,60 @@ export default function Homepage() {
             <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               Latest Blog Posts
             </h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[1, 2].map((i) => (
-                <Card key={i} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
-                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
-                    <CardTitle className="flex items-center text-pink-800">
-                      <BookOpen className="mr-2 text-pink-600" />
-                      Blog Post {i}
-                    </CardTitle>
+            <div className="grid md:grid-cols-3 gap-8">
+              {latestBlogPosts.map((post) => (
+                <Card key={post.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                  <CardHeader className="p-0">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={post.FeaturedImage?.url
+                          ? `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}${post.FeaturedImage.url}`
+                          : "/placeholder.svg?height=400&width=600"}
+                        alt={post.Title}
+                        fill
+                        className="object-cover rounded-t-lg"
+                      />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-pink-800">Summary of blog post {i}</p>
-                    <Button className="mt-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300">
-                      Read More
-                    </Button>
+                  <CardContent className="p-4 flex-grow">
+                    <h3 className="text-xl font-semibold mb-2">{post.Title}</h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {post.Content[0].children[0].text}
+                    </p>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {new Date(post.PublishDate).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center">
+                        <User className="h-4 w-4 mr-1" />
+                        {post.Author}
+                      </div>
+                    </div>
                   </CardContent>
+                  <CardFooter className="p-4">
+                    <Link href={`/blog/${post.Slug}`} passHref>
+                      <Button
+                        variant="default"
+                        className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        Read More
+                      </Button>
+                    </Link>
+                  </CardFooter>
                 </Card>
               ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link href="/blog">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                >
+                  View All Blog Posts
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
