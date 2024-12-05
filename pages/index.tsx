@@ -224,7 +224,9 @@ export default function Homepage() {
 
         <section id="featured-video" className="bg-gradient-to-br from-white to-pink-100 py-16">
           <div className="container mx-auto px-4">
-            
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+              Featured Video
+            </h2>
             <div className="flex justify-center">
               <iframe 
                 width="900" 
@@ -239,7 +241,6 @@ export default function Homepage() {
             </div>
           </div>
         </section>
-
 
         <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16">
           <div className="container mx-auto px-4">
@@ -282,7 +283,6 @@ export default function Homepage() {
                       fill
                       className="object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-pink-500 to-transparent opacity-50"></div>
                   </div>
                   <CardContent className="relative p-6">
                     <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">

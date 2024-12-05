@@ -127,7 +127,7 @@ export default function MembersPage() {
 
         <div className="space-y-12">
           {members.map((member, index) => (
-            <Card key={member.id} className="relative overflow-hidden bg-gradient-to-br from-pink-100 to-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <Card key={member.id} className="relative overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="relative h-48 md:h-64 overflow-hidden">
                 <Image
                   src={member.banner}
@@ -135,12 +135,7 @@ export default function MembersPage() {
                   fill
                   className="object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-pink-500 to-transparent opacity-50"></div>
               </div>
-              <div className="absolute inset-0 bg-pink-200 opacity-20" style={{
-                backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff69b4' fill-opacity='0.15'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-              }}></div>
-              <div className={`absolute ${index % 2 === 0 ? 'top-0 right-0' : 'bottom-0 left-0'} w-24 h-24 bg-pink-500 opacity-20 transform rotate-45 translate-x-12 -translate-y-12`}></div>
               <CardContent className="relative p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
                 <div className="w-32 h-32 relative flex-shrink-0 bg-white rounded-full shadow-md overflow-hidden -mt-16 border-4 border-white">
                   <Image
@@ -159,7 +154,7 @@ export default function MembersPage() {
                   <p className="text-gray-700">{member.description}</p>
                 </div>
               </CardContent>
-              <CardFooter className="relative bg-gradient-to-r from-pink-200 to-pink-100 p-4 flex justify-center md:justify-end">
+              <CardFooter className="relative bg-gray-100 p-4 flex justify-center md:justify-end">
                 <Button
                   variant="default"
                   className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300 shadow-md hover:shadow-lg"
