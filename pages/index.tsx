@@ -152,10 +152,10 @@ export default function Homepage() {
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-white text-center px-4">
               <h1 className="text-4xl font-bold mb-4">
-                "I will give them one heart and one purpose" Jer 32:39
+                &quot;I will give them one heart and one purpose&quot; Jer 32:39
               </h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto">
-                We're passionate about our city and making it a better place for
+                We&apos;re passionate about our city and making it a better place for
                 all who live, work, and travel here – especially those who are
                 in need of a hand.
               </p>

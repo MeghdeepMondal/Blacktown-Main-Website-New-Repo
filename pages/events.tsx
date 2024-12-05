@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Slider, SliderTrack, SliderRange, SliderThumb } from "@/components/ui/slider"
+import { Slider } from "@/components/ui/slider"
 import { MapPin, Calendar } from 'lucide-react'
 
 // Types
@@ -193,12 +193,7 @@ const EventsPage: React.FC = () => {
               value={radius}
               onValueChange={setRadius}
               className="w-full"
-            >
-              <SliderTrack className="bg-pink-200">
-                <SliderRange className="bg-pink-500" />
-              </SliderTrack>
-              <SliderThumb className="border-2 border-pink-500 w-5 h-5" />
-            </Slider>
+            />
           </div>
         </div>
 

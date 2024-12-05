@@ -24,9 +24,9 @@ export default function AboutPage() {
               In a densely populated and diverse area of western Sydney, many churches are only involved in
             token or historical ways of engaging with the community, meeting surface level needs for
             attracting people to Sunday services. A new partnership between local church leaders has
-            established a community hub in the heart of Blacktown. The hub's purpose is to motivate 'The
-            Church' of Blacktown to be immersed in the local community and to see gospel transformation in
-            people's lives in the name of Jesus.
+            established a community hub in the heart of Blacktown. The hub&apos;s purpose is to motivate &quot;The
+            Church&quot; of Blacktown to be immersed in the local community and to see gospel transformation in
+            people&apos;s lives in the name of Jesus.
               </p>
             </CardContent>
           </Card>
@@ -42,8 +42,8 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <p className="text-lg">
-              God's will to be done in Blacktown as it is in heaven: suburban transformation through
-              restoration and healing of the city aligning with God's desires and heart for its people.
+              God&apos;s will to be done in Blacktown as it is in heaven: suburban transformation through
+              restoration and healing of the city aligning with God&apos;s desires and heart for its people.
               </p>
             </CardContent>
           </Card>
@@ -61,7 +61,7 @@ export default function AboutPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p>Dependence on God's enabling power</p>
+                <p>Dependence on God&apos;s enabling power</p>
               </CardContent>
             </Card>
             <Card className="bg-white shadow-lg">
@@ -100,7 +100,7 @@ export default function AboutPage() {
             </CardHeader>
             <CardContent>
               <p className="text-lg">
-                Create space (physical, social, relational, civil space) and opportunities for "champions"
+                Create space (physical, social, relational, civil space) and opportunities for &quot;champions&quot;
                 who align with the vision, mission, and values, and develop teams who serve the city.
               </p>
             </CardContent>

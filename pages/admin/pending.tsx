@@ -11,7 +11,7 @@ const AdminPendingPage: React.FC = () => {
         <CardContent>
           <p className="text-center">
             Thank you for your patience. Your signup request is currently being reviewed by our team.
-            We'll notify you once your account has been approved.
+            We&apos;ll notify you once your account has been approved.
           </p>
         </CardContent>
       </Card>

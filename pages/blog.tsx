@@ -15,17 +15,17 @@ interface BlogPost {
   Author: string
   PublishDate: string
   Slug: string
-  FeaturedImage?: {
-    data?: {
-      attributes?: {
-        url?: string
-        formats?: {
-          thumbnail?: {
-            url?: string
+  FeaturedImage: {
+    data: {
+      attributes: {
+        url: string
+        formats: {
+          thumbnail: {
+            url: string
           }
         }
       }
-    }
+    } | null
   }
 }
 
@@ -44,7 +44,7 @@ export default function BlogPage({ blogPosts }: BlogPageProps) {
               <Card key={post.id} className="bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <CardHeader>
                   <div className="relative h-48 w-full mb-4">
-                    {post.FeaturedImage?.data?.attributes?.formats?.thumbnail?.url ? (
+                    {post.FeaturedImage?.data ? (
                       <Image
                         src={`http://localhost:1337${post.FeaturedImage.data.attributes.formats.thumbnail.url}`}
                         alt={post.Title}

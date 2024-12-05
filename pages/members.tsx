@@ -122,7 +122,7 @@ export default function MembersPage() {
       <main className="container mx-auto px-4 py-8">
         <h1 className="text-4xl font-bold text-center mb-8 text-pink-800">Our Members</h1>
         <p className="text-lg text-center mb-12 max-w-2xl mx-auto text-pink-700">
-          Get to know the organizations that make up One Heart Blacktown. Together, we're working to make our community stronger.
+          Get to know the organizations that make up One Heart Blacktown. Together, we&apos;re working to make our community stronger.
         </p>
 
         <div className="space-y-12">

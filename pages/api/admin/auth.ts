@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       // Signup logic
       try {
-        const { name, description, address, contactDetails, lat, lng } = req.body
+        const { name, description, address, contactDetails, lat, lng, status } = req.body
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const newAdminRequest = await prisma.adminrequests.create({
@@ -42,9 +42,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             description,
             address,
             contactDetails,
-            lat: parseFloat(lat),
-            lng: parseFloat(lng),
-            status: 'pending'
+            lat,
+            lng,
+            status,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
         })
 
