@@ -9,7 +9,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut } from 'lucide-react';
+import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut, ExternalLink } from 'lucide-react';
 import { useState, useEffect } from "react";
 
 const images = [
@@ -27,6 +27,31 @@ interface Event {
   photo?: string
   registrationLink?: string
 }
+
+// Mock data for featured members
+const featuredMembers = [
+  {
+    id: 1,
+    name: "St. Patrick's Church",
+    logo: "/church1.jpg?height=100&width=100",
+    banner: "/cbanner1.jpg?height=200&width=800",
+    description: "St. Patrick's Church is a vibrant Catholic community dedicated to serving the spiritual needs of Blacktown residents since 1861."
+  },
+  {
+    id: 2,
+    name: "Blacktown Anglican Church",
+    logo: "/church2.jpg?height=100&width=100",
+    banner: "/cbanner2.jpg?height=200&width=800",
+    description: "Blacktown Anglican Church is committed to sharing God's love through worship, fellowship, and community outreach programs."
+  },
+  {
+    id: 3,
+    name: "Blacktown Uniting Church",
+    logo: "/church3.jpg?height=100&width=100",
+    banner: "/cbanner4.jpg?height=200&width=800",
+    description: "Blacktown Uniting Church is an inclusive community fostering faith, social justice, and compassion in the heart of Blacktown."
+  },
+];
 
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -79,8 +104,8 @@ export default function Homepage() {
                 </Link>
               </li>
               <li>
-                <Link href="/opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Opportunities
+                <Link href="/members" className="text-white hover:text-pink-500 transition-colors duration-300">
+                  Members
                 </Link>
               </li>
               <li>
@@ -215,31 +240,6 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="opportunities" className="bg-gradient-to-br from-pink-100 to-white py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              Opportunities
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
-                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
-                    <CardTitle className="flex items-center text-pink-800">
-                      <Briefcase className="mr-2 text-pink-600" />
-                      Opportunity {i}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-pink-800">Description of opportunity {i}</p>
-                    <Button className="mt-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300">
-                      Learn More
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
 
         <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16">
           <div className="container mx-auto px-4">
@@ -263,6 +263,63 @@ export default function Homepage() {
                   </CardContent>
                 </Card>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+              Our Members
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {featuredMembers.map((member, index) => (
+                <Card key={member.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  <div className="relative h-48 overflow-hidden">
+                    <Image
+                      src={member.banner}
+                      alt={`${member.name} banner`}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-pink-500 to-transparent opacity-50"></div>
+                  </div>
+                  <CardContent className="relative p-6">
+                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                      <div className="w-24 h-24 relative bg-white rounded-full shadow-md overflow-hidden border-4 border-white">
+                        <Image
+                          src={member.logo}
+                          alt={`${member.name} logo`}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-semibold text-center mt-12 mb-2 text-pink-800">{member.name}</h3>
+                    <p className="text-gray-600 text-center mb-4">{member.description}</p>
+                    <div className="text-center">
+                      <Button
+                        variant="default"
+                        className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300"
+                      >
+                        Learn More
+                        <ExternalLink className="w-4 h-4 ml-2" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link href="/members">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                >
+                  View All Members
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -320,6 +377,17 @@ export default function Homepage() {
                   </CardFooter>
                 </Card>
               ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link href="/events">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                >
+                  View All Events
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
