@@ -197,21 +197,19 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section className="bg-gradient-to-br from-white to-pink-100 py-16">
+        <section id="featured-video" className="bg-gradient-to-br from-white to-pink-100 py-16">
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              Featured Video
-            </h2>
+            
             <div className="flex justify-center">
               <iframe 
-                src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Foneheartblacktown%2Fvideos%2F414025854754518%2F&show_text=false&width=267&t=0" 
-                width="267" 
-                height="476" 
-                style={{border: 'none', overflow: 'hidden'}}
-                scrolling="no" 
+                width="900" 
+                height="506" 
+                src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
+                title="YouTube video player" 
                 frameBorder="0" 
-                allowFullScreen={true} 
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerPolicy="strict-origin-when-cross-origin" 
+                allowFullScreen
               ></iframe>
             </div>
           </div>
@@ -302,8 +300,8 @@ export default function Homepage() {
                     </div>
                   </CardContent>
                   <CardFooter className="p-4">
-                    <div className="flex gap-2 w-full">
-                      <Link href={`/events/${event.id}`} passHref className="flex-1">
+                    <div className="flex flex-col gap-2 w-full">
+                      <Link href={`/events/${event.id}`} passHref>
                         <Button
                           variant="default"
                           className="w-full bg-pink-500 hover:bg-pink-600 text-white"
@@ -313,7 +311,7 @@ export default function Homepage() {
                       </Link>
                       <Button
                         variant="outline"
-                        className="flex-1 border-pink-500 text-pink-500 hover:bg-pink-50"
+                        className="w-full border-pink-500 text-pink-500 hover:bg-pink-50"
                         onClick={() => window.open(event.registrationLink, '_blank')}
                       >
                         Register
