@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { PrismaClient, Prisma } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 const prisma = new PrismaClient();
 
@@ -69,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       res.status(200).json(updatedAdmin);
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
         return res.status(400).json({ message: 'Email already in use by another admin' });
       }
       console.error('Error updating admin information:', error);
