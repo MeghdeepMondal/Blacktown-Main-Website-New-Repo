@@ -1,24 +1,15 @@
 "use client";
 import Link from 'next/link'
 import Image from "next/image";
-import { Button } from "../components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import {
-  Calendar,
-  Users,
-  Heart,
-  MapPin,
-  Briefcase,
-  BookOpen,
-  Info,
-  Mail,
-  LogOut,
-} from "lucide-react";
+  CardFooter,
+} from "@/components/ui/card";
+import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut } from 'lucide-react';
 import { useState, useEffect } from "react";
 
 const images = [
@@ -26,6 +17,17 @@ const images = [
   "/caro2.jpg?height=1080&width=1920",
   "/caro1.jpg?height=1080&width=1920",
 ];
+
+// Add this type definition
+interface Event {
+  id: string
+  name: string
+  description: string
+  date: string
+  location: string
+  photo?: string
+  registrationLink?: string
+}
 
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -37,6 +39,25 @@ export default function Homepage() {
 
     return () => clearInterval(interval);
   }, []);
+
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
+
+  useEffect(() => {
+    const fetchUpcomingEvents = async () => {
+      try {
+        const response = await fetch('/api/events?limit=3')
+        if (!response.ok) {
+          throw new Error('Failed to fetch events')
+        }
+        const data = await response.json()
+        setUpcomingEvents(data.events)
+      } catch (error) {
+        console.error('Error fetching upcoming events:', error)
+      }
+    }
+
+    fetchUpcomingEvents()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
@@ -262,22 +283,41 @@ export default function Homepage() {
               Upcoming Events
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
-                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
-                    <CardTitle className="flex items-center text-pink-800">
-                      <Calendar className="mr-2 text-pink-600" />
-                      Event {i}
-                    </CardTitle>
+              {upcomingEvents.map((event) => (
+                <Card key={event.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                  <CardHeader className="p-0">
+                    <div className="relative h-48 w-full">
+                      <Image
+                        src={event.photo || "/placeholder.svg?height=400&width=600"}
+                        alt={event.name}
+                        fill
+                        className="object-cover rounded-t-lg"
+                      />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-pink-800">Date: June {10 + i}, 2023</p>
-                    <p className="text-pink-800">Time: 7:00 PM</p>
-                    <p className="text-pink-800">Location: Church {i}</p>
-                    <Button className="mt-4 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300">
-                      Learn More
-                    </Button>
+                  <CardContent className="p-4 flex-grow">
+                    <h3 className="text-xl font-semibold mb-2">{event.name}</h3>
+                    <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
+                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {new Date(event.date).toLocaleDateString()}
+                      </div>
+                      <div className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {event.location}
+                      </div>
+                    </div>
                   </CardContent>
+                  <CardFooter className="p-4">
+                    <Button
+                      variant="default"
+                      className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                      onClick={() => window.open(event.registrationLink, '_blank')}
+                    >
+                      Register
+                    </Button>
+                  </CardFooter>
                 </Card>
               ))}
             </div>
