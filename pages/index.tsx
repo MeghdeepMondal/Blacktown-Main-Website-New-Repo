@@ -18,7 +18,6 @@ const images = [
   "/caro1.jpg?height=1080&width=1920",
 ];
 
-// Add this type definition
 interface Event {
   id: string
   name: string
@@ -31,6 +30,7 @@ interface Event {
 
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -39,8 +39,6 @@ export default function Homepage() {
 
     return () => clearInterval(interval);
   }, []);
-
-  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
@@ -76,38 +74,32 @@ export default function Homepage() {
           <nav>
             <ul className="flex space-x-6">
               <li>
-                <Link href="/" className="text-white hover:text-pink-500">
+                <Link href="/" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Home
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/opportunities"
-                  className="text-white hover:text-pink-500"
-                >
+                <Link href="/opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Opportunities
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-white hover:text-pink-500">
+                <Link href="/blog" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-white hover:text-pink-500">
+                <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-white hover:text-pink-500">
+                <Link href="/about" className="text-white hover:text-pink-500 transition-colors duration-300">
                   About
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/contact"
-                  className="text-white hover:text-pink-500"
-                >
+                <Link href="/contact" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Contact
                 </Link>
               </li>
@@ -310,13 +302,23 @@ export default function Homepage() {
                     </div>
                   </CardContent>
                   <CardFooter className="p-4">
-                    <Button
-                      variant="default"
-                      className="w-full bg-pink-500 hover:bg-pink-600 text-white"
-                      onClick={() => window.open(event.registrationLink, '_blank')}
-                    >
-                      Register
-                    </Button>
+                    <div className="flex gap-2 w-full">
+                      <Link href={`/events/${event.id}`} passHref className="flex-1">
+                        <Button
+                          variant="default"
+                          className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                        >
+                          Learn More
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        className="flex-1 border-pink-500 text-pink-500 hover:bg-pink-50"
+                        onClick={() => window.open(event.registrationLink, '_blank')}
+                      >
+                        Register
+                      </Button>
+                    </div>
                   </CardFooter>
                 </Card>
               ))}
