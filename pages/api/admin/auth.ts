@@ -34,8 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { name, description, address, contactDetails, lat, lng } = req.body
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const now = new Date()
-
         const newAdminRequest = await prisma.adminrequests.create({
           data: {
             name,
@@ -46,9 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             contactDetails,
             lat: parseFloat(lat),
             lng: parseFloat(lng),
-            status: 'pending',
-            createdAt: now,
-            updatedAt: now
+            status: 'pending'
           },
         })
 
