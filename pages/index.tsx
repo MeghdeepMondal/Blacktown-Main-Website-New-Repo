@@ -205,6 +205,20 @@ export default function Homepage() {
             <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               About One Heart Blacktown
             </h2>
+            
+            <div className="flex justify-center mb-12">
+              <iframe 
+                width="900" 
+                height="506" 
+                src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                referrerPolicy="strict-origin-when-cross-origin" 
+                allowFullScreen
+              ></iframe>
+            </div>
+
             <div className="grid md:grid-cols-3 gap-8">
               <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
                 <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
@@ -248,26 +262,6 @@ export default function Homepage() {
                   </p>
                 </CardContent>
               </Card>
-            </div>
-          </div>
-        </section>
-
-        <section id="featured-video" className="bg-gradient-to-br from-white to-pink-100 py-16">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              Featured Video
-            </h2>
-            <div className="flex justify-center">
-              <iframe 
-                width="900" 
-                height="506" 
-                src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
-                title="YouTube video player" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerPolicy="strict-origin-when-cross-origin" 
-                allowFullScreen
-              ></iframe>
             </div>
           </div>
         </section>
