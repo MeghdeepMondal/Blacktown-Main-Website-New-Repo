@@ -12,6 +12,7 @@ import {
 import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut, ExternalLink, User } from 'lucide-react';
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { motion } from "framer-motion";
 
 const images = [
   "/caro4.png?height=1080&width=1920",
@@ -47,14 +48,14 @@ const featuredMembers = [
     id: 1,
     name: "St. Patrick's Church",
     logo: "/church1.jpg?height=100&width=100",
-    banner: "/cbanner1.jpg?height=200&width=800",
+    banner: "/cbanner5.jpg?height=200&width=800",
     description: "St. Patrick's Church is a vibrant Catholic community dedicated to serving the spiritual needs of Blacktown residents since 1861."
   },
   {
     id: 2,
     name: "Blacktown Anglican Church",
     logo: "/church2.jpg?height=100&width=100",
-    banner: "/cbanner2.jpg?height=200&width=800",
+    banner: "/cbanner6.jpg?height=200&width=800",
     description: "Blacktown Anglican Church is committed to sharing God's love through worship, fellowship, and community outreach programs."
   },
   {
@@ -65,6 +66,186 @@ const featuredMembers = [
     description: "Blacktown Uniting Church is an inclusive community fostering faith, social justice, and compassion in the heart of Blacktown."
   },
 ];
+
+// Add this CSS class to your global styles or as a styled component
+const floatingAnimation = {
+  initial: { y: 0 },
+  animate: {
+    y: [-10, 10, -10],
+    transition: {
+      duration: 4,
+      repeat: Infinity,
+      ease: "easeInOut"
+    }
+  }
+};
+
+// Add these SVG components after your imports
+const HeartSVG = () => (
+  <motion.div
+    className="absolute -z-10 opacity-20"
+    style={{ top: '20%', right: '10%' }}
+    animate={{
+      scale: [1, 1.2, 1],
+      rotate: [0, 10, -10, 0],
+    }}
+    transition={{ duration: 4, repeat: Infinity }}
+  >
+    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path
+        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+        fill="#ff69b4"
+        stroke="none"
+      />
+    </svg>
+  </motion.div>
+);
+
+const CrossSVG = () => (
+  <motion.div
+    className="absolute -z-10 opacity-10"
+    style={{ top: '40%', left: '5%' }}
+    animate={{
+      rotate: [0, 180],
+      scale: [1, 1.1, 1],
+    }}
+    transition={{ duration: 8, repeat: Infinity }}
+  >
+    <svg width="100" height="100" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2L14 7H10L12 2Z M12 22L10 17H14L12 22Z M2 12L7 10V14L2 12Z M22 12L17 14V10L22 12Z"
+        fill="#ffd700"
+        stroke="none"
+      />
+    </svg>
+  </motion.div>
+);
+
+const DoveSVG = () => (
+  <motion.div
+    className="absolute -z-10 opacity-15"
+    style={{ top: '15%', left: '15%' }}
+    {...floatingAnimation}
+  >
+    <svg width="80" height="80" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 3C16.97 3 21 7.03 21 12C21 16.97 16.97 21 12 21C7.03 21 3 16.97 3 12C3 7.03 7.03 3 12 3ZM12 19C15.86 19 19 15.86 19 12C19 8.14 15.86 5 12 5C8.14 5 5 8.14 5 12C5 15.86 8.14 19 12 19Z"
+        fill="#ffffff"
+        stroke="#87ceeb"
+        strokeWidth="0.5"
+      />
+    </svg>
+  </motion.div>
+);
+
+// Add this new component for background shapes
+const BackgroundShapes = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <svg className="absolute top-0 left-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: 'rgba(255,192,203,0.2)', stopOpacity: 1 }} />
+          <stop offset="100%" style={{ stopColor: 'rgba(255,255,255,0)', stopOpacity: 1 }} />
+        </linearGradient>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: 'rgba(255,192,203,0.1)', stopOpacity: 1 }} />
+          <stop offset="100%" style={{ stopColor: 'rgba(255,105,180,0.2)', stopOpacity: 1 }} />
+        </linearGradient>
+      </defs>
+      <path d="M0,0 Q50,100 100,0 V100 H0 Z" fill="url(#grad1)" />
+      <circle cx="80%" cy="60%" r="100" fill="rgba(255,192,203,0.2)" />
+      <path d="M100,100 Q50,0 0,100 Z" fill="rgba(255,192,203,0.1)" />
+      <path d="M0,50 Q50,0 100,50 T200,50" fill="none" stroke="url(#grad2)" strokeWidth="2" />
+      <g transform="translate(50, 50)">
+        <path d="M0,0 C10,20 30,20 40,0 C50,-20 70,-20 80,0" fill="none" stroke="rgba(255,105,180,0.3)" strokeWidth="2" />
+        <animateTransform attributeName="transform" type="translate" from="0 0" to="0 20" dur="5s" repeatCount="indefinite" />
+      </g>
+      <g transform="translate(150, 150)">
+        <path d="M0,0 L20,20 L40,0 L20,-20 Z" fill="rgba(255,192,203,0.2)" />
+        <animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="10s" repeatCount="indefinite" />
+      </g>
+    </svg>
+  </div>
+);
+
+// Add this helper function
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const DecorativeShapes = () => (
+  <>
+    {/* Cross Pattern */}
+    <motion.div
+      className="absolute top-10 right-10 opacity-20"
+      animate={{
+        rotate: [0, 360],
+        scale: [1, 1.2, 1],
+      }}
+      transition={{ duration: 15, repeat: Infinity }}
+    >
+      <svg width="50" height="50" viewBox="0 0 50 50">
+        <path
+          d="M25 0L30 20L50 25L30 30L25 50L20 30L0 25L20 20L25 0Z"
+          fill="rgba(255,105,180,0.5)"
+        />
+      </svg>
+    </motion.div>
+
+    {/* Floating Hearts */}
+    <motion.div
+      className="absolute bottom-20 left-10 opacity-15"
+      animate={{
+        y: [-10, 10],
+        x: [-5, 5],
+      }}
+      transition={{ duration: 4, repeat: Infinity, yoyo: true }}
+    >
+      <svg width="40" height="40" viewBox="0 0 24 24">
+        <path
+          d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          fill="rgba(255,192,203,0.5)"
+        />
+      </svg>
+    </motion.div>
+
+    {/* Rotating Circle Pattern */}
+    <motion.div
+      className="absolute top-1/2 right-20 opacity-10"
+      animate={{
+        rotate: [0, -360],
+      }}
+      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+    >
+      <svg width="100" height="100" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" stroke="rgba(255,105,180,0.3)" strokeWidth="2" fill="none" />
+        <circle cx="50" cy="10" r="5" fill="rgba(255,105,180,0.5)" />
+        <circle cx="50" cy="90" r="5" fill="rgba(255,105,180,0.5)" />
+        <circle cx="10" cy="50" r="5" fill="rgba(255,105,180,0.5)" />
+        <circle cx="90" cy="50" r="5" fill="rgba(255,105,180,0.5)" />
+      </svg>
+    </motion.div>
+
+    {/* Pulsing Dove */}
+    <motion.div
+      className="absolute bottom-40 right-40 opacity-20"
+      animate={{
+        scale: [1, 1.1, 1],
+      }}
+      transition={{ duration: 3, repeat: Infinity }}
+    >
+      <svg width="60" height="60" viewBox="0 0 24 24">
+        <path
+          d="M12 3C16.97 3 21 7.03 21 12C21 16.97 16.97 21 12 21C7.03 21 3 16.97 3 12C3 7.03 7.03 3 12 3ZM12 19C15.86 19 19 15.86 19 12C19 8.14 15.86 5 12 5"
+          stroke="rgba(135,206,235,0.5)"
+          fill="none"
+          strokeWidth="2"
+        />
+      </svg>
+    </motion.div>
+  </>
+);
 
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -165,6 +346,9 @@ export default function Homepage() {
 
       <main>
         <section className="relative h-[600px] overflow-hidden">
+          <HeartSVG />
+          <CrossSVG />
+          <DoveSVG />
           {images.map((src, index) => (
             <Image
               key={src}
@@ -180,28 +364,80 @@ export default function Homepage() {
             />
           ))}
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="text-white text-center px-4">
-              <h1 className="text-4xl font-bold mb-4">
+            <motion.div 
+              className="text-white text-center px-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1 }}
+            >
+              <motion.h1 
+                className="text-4xl font-bold mb-4"
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
                 &quot;I will give them one heart and one purpose&quot; Jer 32:39
-              </h1>
+              </motion.h1>
               <p className="text-xl mb-8 max-w-3xl mx-auto">
                 We&apos;re passionate about our city and making it a better place for
                 all who live, work, and travel here – especially those who are
                 in need of a hand.
               </p>
-              <Button
-                variant="outline"
-                size="lg"
-                className="bg-pink-500 text-white border-pink-500 hover:bg-pink-600 hover:border-pink-600"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Join Our Mission
-              </Button>
-            </div>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="bg-pink-500 text-white border-pink-500 hover:bg-pink-600 hover:border-pink-600 transition-all duration-300"
+                >
+                  Join Our Mission
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
+          <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+            <svg 
+              className="relative block w-full h-[150px]" 
+              viewBox="0 0 1200 120" 
+              preserveAspectRatio="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Main wave - two peaks with more wave */}
+              <path 
+                d="M0,0 
+                   C150,40 250,0 400,60
+                   C550,120 650,0 800,60
+                   C950,120 1050,40 1200,0
+                   V120 H0 Z" 
+                className="fill-white"
+              />
+              {/* Secondary wave */}
+              <path 
+                d="M0,30
+                   C150,70 250,30 400,90
+                   C550,150 650,30 800,90
+                   C950,150 1050,70 1200,30
+                   V120 H0 Z" 
+                className="fill-white opacity-30"
+              />
+              {/* Third wave */}
+              <path 
+                d="M0,60
+                   C150,100 250,60 400,120
+                   C550,180 650,60 800,120
+                   C950,180 1050,100 1200,60
+                   V120 H0 Z" 
+                className="fill-white opacity-20"
+              />
+            </svg>
           </div>
         </section>
 
-        <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16">
-          <div className="container mx-auto px-4">
+        <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+          <BackgroundShapes />
+          <DecorativeShapes />
+          <div className="container mx-auto px-4 relative z-10">
             <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               About One Heart Blacktown
             </h2>
@@ -266,8 +502,10 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16">
-          <div className="container mx-auto px-4">
+        <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
+          <BackgroundShapes />
+          <DecorativeShapes />
+          <div className="container mx-auto px-4 relative z-10">
             <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               Latest Blog Posts
             </h2>
@@ -329,8 +567,10 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16">
-          <div className="container mx-auto px-4">
+        <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+          <BackgroundShapes />
+          <DecorativeShapes />
+          <div className="container mx-auto px-4 relative z-10">
             <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               Our Members
             </h2>
@@ -385,8 +625,10 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="events" className="bg-gradient-to-br from-pink-100 to-white py-16">
-          <div className="container mx-auto px-4">
+        <section id="events" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
+          <BackgroundShapes />
+          <DecorativeShapes />
+          <div className="container mx-auto px-4 relative z-10">
             <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
               Upcoming Events
             </h2>
@@ -453,8 +695,10 @@ export default function Homepage() {
           </div>
         </section>
 
-        <section id="contact" className="bg-gradient-to-br from-white to-pink-100 py-16">
-          <div className="container mx-auto px-4 text-center">
+        <section id="contact" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+          <BackgroundShapes />
+          <DecorativeShapes />
+          <div className="container mx-auto px-4 text-center relative z-10">
             <h2 className="text-3xl font-bold mb-8 text-pink-800">Contact Us</h2>
             <p className="text-lg mb-8 text-pink-700">
               Get in touch to learn more about our mission or to get involved.
@@ -473,11 +717,31 @@ export default function Homepage() {
       </main>
 
       <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-          <div className="mt-4 flex justify-center items-center">
-            <MapPin className="mr-2" />
-            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            {/* Logo and Name */}
+            <div className="flex items-center mb-4 md:mb-0">
+              <Image
+                src="/One Heart.png"
+                alt="One Heart Blacktown Logo"
+                width={48}
+                height={48}
+                className="w-12 h-12 object-contain"
+              />
+              <span className="ml-3 text-lg font-semibold">One Heart Blacktown</span>
+            </div>
+
+            {/* Copyright and Address */}
+            <div className="text-center md:text-right">
+              <p className="mb-2">&copy; 2024 One Heart Blacktown. All rights reserved.</p>
+              <div className="flex items-center justify-center md:justify-end">
+                <MapPin className="mr-2 h-4 w-4" />
+                <span className="text-sm">
+                  Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, 
+                  Blacktown NSW 2148, Australia
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
