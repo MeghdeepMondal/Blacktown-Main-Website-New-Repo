@@ -444,8 +444,8 @@ export default function Homepage() {
             
             <div className="flex justify-center mb-12">
               <iframe 
-                width="900" 
-                height="506" 
+                width="1200" 
+                height="675" 
                 src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
                 title="YouTube video player" 
                 frameBorder="0" 
