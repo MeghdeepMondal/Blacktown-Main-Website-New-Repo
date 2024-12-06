@@ -31,19 +31,13 @@ interface Event {
 
 interface BlogPost {
   id: number;
-  attributes: {
-    Title: string;
-    Content: Array<{ type: string; children: Array<{ text: string }> }>;
-    Author: string;
-    PublishDate: string;
-    Slug: string;
-    FeaturedImage: {
-      data?: {
-        attributes?: {
-          url: string;
-        };
-      };
-    };
+  Title: string;
+  Content: Array<{ type: string; children: Array<{ text: string }> }>;
+  Author: string;
+  PublishDate: string;
+  Slug: string;
+  FeaturedImage: {
+    url?: string;
   };
 }
 
