@@ -12,6 +12,24 @@ module.exports = {
           secondary: 'white',
           accent: '#ec4899', // pink-500
         },
+        animation: {
+          'wave': 'wave 8s ease-in-out infinite',
+          'wave-slow': 'wave 10s ease-in-out infinite',
+          'wave-slower': 'wave 12s ease-in-out infinite',
+          'wave-reverse': 'wave-reverse 8s ease-in-out infinite',
+          'wave-slow-reverse': 'wave-reverse 10s ease-in-out infinite',
+          'wave-slower-reverse': 'wave-reverse 12s ease-in-out infinite',
+        },
+        keyframes: {
+          wave: {
+            '0%, 100%': { transform: 'translateX(0)' },
+            '50%': { transform: 'translateX(-5%)' }
+          },
+          'wave-reverse': {
+            '0%, 100%': { transform: 'translateX(0)' },
+            '50%': { transform: 'translateX(5%)' }
+          },
+        },
       },
     },
     plugins: [],

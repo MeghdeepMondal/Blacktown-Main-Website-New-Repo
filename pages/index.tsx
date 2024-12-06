@@ -382,74 +382,71 @@ export default function Homepage() {
                 all who live, work, and travel here – especially those who are
                 in need of a hand.
               </p>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="bg-pink-500 text-white border-pink-500 hover:bg-pink-600 hover:border-pink-600 transition-all duration-300"
-                >
-                  Join Our Mission
-                </Button>
-              </motion.div>
             </motion.div>
           </div>
           <div className="absolute bottom-0 left-0 w-full overflow-hidden">
             <svg 
-              className="relative block w-full h-[150px]" 
+              className="relative block w-full h-[180px]" 
               viewBox="0 0 1200 120" 
               preserveAspectRatio="none" 
               xmlns="http://www.w3.org/2000/svg"
             >
-              {/* Pink waves - flipped and offset */}
+              {/* Pink waves - extended past viewBox */}
               <path 
-                d="M1200,20 
-                   C1100,80 1000,10 900,60
-                   C800,110 700,40 600,80
-                   C500,120 400,50 300,85
-                   C200,120 100,70 0,90
-                   V120 H1200 Z" 
-                className="fill-pink-100/30"
+                d="M1300,15 
+                   C1150,75 1050,5 950,55
+                   C800,105 700,35 600,75
+                   C500,115 400,45 250,80
+                   C150,115 50,65 -100,85
+                   V120 H1300 Z" 
+                className="fill-pink-100/40 animate-wave"
               />
               <path 
-                d="M1200,30 
-                   C1100,90 1000,20 900,70
-                   C800,120 700,50 600,90
-                   C500,130 400,60 300,95
-                   C200,130 100,80 0,100
-                   V120 H1200 Z" 
-                className="fill-pink-100/20"
+                d="M1300,25 
+                   C1150,85 1050,15 950,65
+                   C800,115 700,45 600,85
+                   C500,125 400,55 250,90
+                   C150,125 50,75 -100,95
+                   V120 H1300 Z" 
+                className="fill-pink-200/20 animate-wave-slow"
+              />
+              <path 
+                d="M1300,35 
+                   C1150,95 1050,25 950,75
+                   C800,125 700,55 600,95
+                   C500,135 400,65 250,100
+                   C150,135 50,85 -100,105
+                   V120 H1300 Z" 
+                className="fill-pink-300/10 animate-wave-slower"
               />
 
-              {/* Original white waves */}
+              {/* White waves - extended past viewBox */}
               <path 
-                d="M0,20 
-                   C100,80 200,10 300,60
-                   C400,110 500,40 600,80
-                   C700,120 800,50 900,85
-                   C1000,120 1100,70 1200,90
-                   V120 H0 Z" 
-                className="fill-white"
+                d="M-100,25 
+                   C50,85 150,15 300,65
+                   C450,115 550,45 650,85
+                   C800,125 900,55 1050,90
+                   C1150,125 1250,75 1300,95
+                   V120 H-100 Z" 
+                className="fill-white animate-wave-reverse"
               />
               <path 
-                d="M0,40
-                   C100,100 200,30 300,80
-                   C400,130 500,60 600,100
-                   C700,140 800,70 900,105
-                   C1000,140 1100,90 1200,110
-                   V120 H0 Z" 
-                className="fill-white opacity-30"
+                d="M-100,45
+                   C50,105 150,35 300,85
+                   C450,135 550,65 650,105
+                   C800,145 900,75 1050,110
+                   C1150,145 1250,95 1300,115
+                   V120 H-100 Z" 
+                className="fill-white/70 animate-wave-slow-reverse"
               />
               <path 
-                d="M0,60
-                   C100,120 200,50 300,100
-                   C400,150 500,80 600,120
-                   C700,160 800,90 900,125
-                   C1000,160 1100,110 1200,130
-                   V120 H0 Z" 
-                className="fill-white opacity-20"
+                d="M-100,65
+                   C50,125 150,55 300,105
+                   C450,155 550,85 650,125
+                   C800,165 900,95 1050,130
+                   C1150,165 1250,115 1300,135
+                   V120 H-100 Z" 
+                className="fill-white/50 animate-wave-slower-reverse"
               />
             </svg>
           </div>
