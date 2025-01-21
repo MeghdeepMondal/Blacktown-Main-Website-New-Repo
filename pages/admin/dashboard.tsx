@@ -33,7 +33,7 @@ const AdminDashboard: React.FC = () => {
   const router = useRouter()
   const { id } = router.query
   const [adminData, setAdminData] = useState<AdminData | null>(null)
-  const [events, setEvents] = useState([])
+  const [events, setEvents] = useState<any[]>([])
   const [newEvent, setNewEvent] = useState({
     name: '',
     date: '',
@@ -85,7 +85,7 @@ const AdminDashboard: React.FC = () => {
           throw new Error('Failed to fetch events')
         }
         const data = await response.json()
-        setEvents(data)
+        setEvents(data.events || [])
       } catch (error) {
         console.error('Error fetching events:', error)
       }
