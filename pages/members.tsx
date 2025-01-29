@@ -171,7 +171,7 @@ export default function MembersPage() {
 
       <footer className="bg-black text-white py-8 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
+          <p>&copy; 2025 One Heart Blacktown. All rights reserved.</p>
           <div className="mt-4 flex justify-center items-center">
             <MapPin className="mr-2" />
             <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
