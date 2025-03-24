@@ -13,6 +13,7 @@ import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion } from "framer-motion";
+import Layout from '@/components/Layout';
 
 const images = [
   "/caro4.png?height=1080&width=1920",
@@ -295,474 +296,400 @@ export default function Homepage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
-      <header className="bg-black text-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src="/One Heart.png"
-              alt="One Heart Blacktown Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 object-contain"
-            />
-            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
-          </div>
-          <nav>
-            <ul className="flex space-x-6">
-              <li>
-                <Link href="/" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/members" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Members
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <Layout>
 
-      <main>
-        <section className="relative h-[600px] overflow-hidden">
-          <HeartSVG />
-          <CrossSVG />
-          <DoveSVG />
-          {images.map((src, index) => (
-            <Image
-              key={src}
-              src={src}
-              alt={`Background ${index + 1}`}
-              fill
-              style={{
-                objectFit: "cover",
-                opacity: index === currentImageIndex ? 1 : 0,
-                transition: "opacity 1s ease-in-out",
-              }}
-              priority={index === 0}
-            />
-          ))}
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <motion.div 
-              className="text-white text-center px-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-            >
-              <motion.h1 
-                className="text-4xl font-bold mb-4"
-                animate={{ scale: [1, 1.02, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
+        <main>
+          <section className="relative h-[600px] overflow-hidden">
+            <HeartSVG />
+            <CrossSVG />
+            <DoveSVG />
+            {images.map((src, index) => (
+              <Image
+                key={src}
+                src={src}
+                alt={`Background ${index + 1}`}
+                fill
+                style={{
+                  objectFit: "cover",
+                  opacity: index === currentImageIndex ? 1 : 0,
+                  transition: "opacity 1s ease-in-out",
+                }}
+                priority={index === 0}
+              />
+            ))}
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <motion.div 
+                className="text-white text-center px-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1 }}
               >
-                &quot;I will give them one heart and one purpose&quot; Jer 32:39
-              </motion.h1>
-              <p className="text-xl mb-8 max-w-3xl mx-auto">
-                We&apos;re passionate about our city and making it a better place for
-                all who live, work, and travel here – especially those who are
-                in need of a hand.
-              </p>
-            </motion.div>
-          </div>
-          <div className="absolute bottom-0 left-0 w-full overflow-hidden">
-            <svg 
-              className="relative block w-full h-[180px]" 
-              viewBox="0 0 1200 120" 
-              preserveAspectRatio="none" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              {/* Pink waves - extended past viewBox */}
-              <path 
-                d="M1300,15 
-                   C1150,75 1050,5 950,55
-                   C800,105 700,35 600,75
-                   C500,115 400,45 250,80
-                   C150,115 50,65 -100,85
-                   V120 H1300 Z" 
-                className="fill-pink-100/40 animate-wave"
-              />
-              <path 
-                d="M1300,25 
-                   C1150,85 1050,15 950,65
-                   C800,115 700,45 600,85
-                   C500,125 400,55 250,90
-                   C150,125 50,75 -100,95
-                   V120 H1300 Z" 
-                className="fill-pink-200/20 animate-wave-slow"
-              />
-              <path 
-                d="M1300,35 
-                   C1150,95 1050,25 950,75
-                   C800,125 700,55 600,95
-                   C500,135 400,65 250,100
-                   C150,135 50,85 -100,105
-                   V120 H1300 Z" 
-                className="fill-pink-300/10 animate-wave-slower"
-              />
-
-              {/* White waves - extended past viewBox */}
-              <path 
-                d="M-100,25 
-                   C50,85 150,15 300,65
-                   C450,115 550,45 650,85
-                   C800,125 900,55 1050,90
-                   C1150,125 1250,75 1300,95
-                   V120 H-100 Z" 
-                className="fill-white animate-wave-reverse"
-              />
-              <path 
-                d="M-100,45
-                   C50,105 150,35 300,85
-                   C450,135 550,65 650,105
-                   C800,145 900,75 1050,110
-                   C1150,145 1250,95 1300,115
-                   V120 H-100 Z" 
-                className="fill-white/70 animate-wave-slow-reverse"
-              />
-              <path 
-                d="M-100,65
-                   C50,125 150,55 300,105
-                   C450,155 550,85 650,125
-                   C800,165 900,95 1050,130
-                   C1150,165 1250,115 1300,135
-                   V120 H-100 Z" 
-                className="fill-white/50 animate-wave-slower-reverse"
-              />
-            </svg>
-          </div>
-        </section>
-
-        <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
-          <BackgroundShapes />
-          <DecorativeShapes />
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              About One Heart Blacktown
-            </h2>
-            
-            <div className="flex justify-center mb-12">
-              <iframe 
-                width="1200" 
-                height="675" 
-                src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
-                title="YouTube video player" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerPolicy="strict-origin-when-cross-origin" 
-                allowFullScreen
-              ></iframe>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
-                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
-                  <CardTitle className="flex items-center text-pink-800">
-                    <Users className="mr-2 text-pink-600" />
-                    Our Members
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-pink-800">
-                    Information about the member churches and organizations that
-                    make up One Heart Blacktown.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
-                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
-                  <CardTitle className="flex items-center text-pink-800">
-                    <Heart className="mr-2 text-pink-600" />
-                    Our Shared Values
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-pink-800">
-                    The core values that unite our members: Prayer, Unity, and
-                    Mission.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
-                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
-                  <CardTitle className="flex items-center text-pink-800">
-                    <Info className="mr-2 text-pink-600" />
-                    Projects
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-pink-800">
-                    Overview of current and past projects undertaken by One
-                    Heart Blacktown.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
-          <BackgroundShapes />
-          <DecorativeShapes />
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              Latest Blog Posts
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {latestBlogPosts.map((post) => (
-                <Card key={post.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                  <CardHeader className="p-0">
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={post.FeaturedImage?.url
-                          ? `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}${post.FeaturedImage.url}`
-                          : "/placeholder.svg?height=400&width=600"}
-                        alt={post.Title}
-                        fill
-                        className="object-cover rounded-t-lg"
-                      />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4 flex-grow">
-                    <h3 className="text-xl font-semibold mb-2">{post.Title}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
-                      {post.Content[0].children[0].text}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {new Date(post.PublishDate).toLocaleDateString()}
-                      </div>
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 mr-1" />
-                        {post.Author}
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="p-4">
-                    <Link href={`/blog/${post.Slug}`} passHref>
-                      <Button
-                        variant="default"
-                        className="w-full bg-pink-500 hover:bg-pink-600 text-white"
-                      >
-                        Read More
-                      </Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Link href="/blog">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                <motion.h1 
+                  className="text-4xl font-bold mb-4"
+                  animate={{ scale: [1, 1.02, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 >
-                  View All Blog Posts
-                </Button>
-              </Link>
+                  &quot;I will give them one heart and one purpose&quot; Jer 32:39
+                </motion.h1>
+                <p className="text-xl mb-8 max-w-3xl mx-auto">
+                  We&apos;re passionate about our city and making it a better place for
+                  all who live, work, and travel here – especially those who are
+                  in need of a hand.
+                </p>
+              </motion.div>
             </div>
-          </div>
-        </section>
+            <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+              <svg 
+                className="relative block w-full h-[180px]" 
+                viewBox="0 0 1200 120" 
+                preserveAspectRatio="none" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                {/* Pink waves - extended past viewBox */}
+                <path 
+                  d="M1300,15 
+                    C1150,75 1050,5 950,55
+                    C800,105 700,35 600,75
+                    C500,115 400,45 250,80
+                    C150,115 50,65 -100,85
+                    V120 H1300 Z" 
+                  className="fill-pink-100/40 animate-wave"
+                />
+                <path 
+                  d="M1300,25 
+                    C1150,85 1050,15 950,65
+                    C800,115 700,45 600,85
+                    C500,125 400,55 250,90
+                    C150,125 50,75 -100,95
+                    V120 H1300 Z" 
+                  className="fill-pink-200/20 animate-wave-slow"
+                />
+                <path 
+                  d="M1300,35 
+                    C1150,95 1050,25 950,75
+                    C800,125 700,55 600,95
+                    C500,135 400,65 250,100
+                    C150,135 50,85 -100,105
+                    V120 H1300 Z" 
+                  className="fill-pink-300/10 animate-wave-slower"
+                />
 
-        <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
-          <BackgroundShapes />
-          <DecorativeShapes />
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              Our Members
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {featuredMembers.map((member, index) => (
-                <Card key={member.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                  <div className="relative h-48 overflow-hidden">
-                    <Image
-                      src={member.banner}
-                      alt={`${member.name} banner`}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <CardContent className="relative p-6">
-                    <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
-                      <div className="w-24 h-24 relative bg-white rounded-full shadow-md overflow-hidden border-4 border-white">
+                {/* White waves - extended past viewBox */}
+                <path 
+                  d="M-100,25 
+                    C50,85 150,15 300,65
+                    C450,115 550,45 650,85
+                    C800,125 900,55 1050,90
+                    C1150,125 1250,75 1300,95
+                    V120 H-100 Z" 
+                  className="fill-white animate-wave-reverse"
+                />
+                <path 
+                  d="M-100,45
+                    C50,105 150,35 300,85
+                    C450,135 550,65 650,105
+                    C800,145 900,75 1050,110
+                    C1150,145 1250,95 1300,115
+                    V120 H-100 Z" 
+                  className="fill-white/70 animate-wave-slow-reverse"
+                />
+                <path 
+                  d="M-100,65
+                    C50,125 150,55 300,105
+                    C450,155 550,85 650,125
+                    C800,165 900,95 1050,130
+                    C1150,165 1250,115 1300,135
+                    V120 H-100 Z" 
+                  className="fill-white/50 animate-wave-slower-reverse"
+                />
+              </svg>
+            </div>
+          </section>
+
+          <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+            <BackgroundShapes />
+            <DecorativeShapes />
+            <div className="container mx-auto px-4 relative z-10">
+              <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+                About One Heart Blacktown
+              </h2>
+              
+              <div className="flex justify-center mb-12">
+                <iframe 
+                  width="1200" 
+                  height="675" 
+                  src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
+                  title="YouTube video player" 
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                  referrerPolicy="strict-origin-when-cross-origin" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-8">
+                <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                    <CardTitle className="flex items-center text-pink-800">
+                      <Users className="mr-2 text-pink-600" />
+                      Our Members
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-pink-800">
+                      Information about the member churches and organizations that
+                      make up One Heart Blacktown.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                    <CardTitle className="flex items-center text-pink-800">
+                      <Heart className="mr-2 text-pink-600" />
+                      Our Shared Values
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-pink-800">
+                      The core values that unite our members: Prayer, Unity, and
+                      Mission.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
+                  <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300">
+                    <CardTitle className="flex items-center text-pink-800">
+                      <Info className="mr-2 text-pink-600" />
+                      Projects
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-pink-800">
+                      Overview of current and past projects undertaken by One
+                      Heart Blacktown.
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </section>
+
+          <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
+            <BackgroundShapes />
+            <DecorativeShapes />
+            <div className="container mx-auto px-4 relative z-10">
+              <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+                Latest Blog Posts
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {latestBlogPosts.map((post) => (
+                  <Card key={post.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                    <CardHeader className="p-0">
+                      <div className="relative h-48 w-full">
                         <Image
-                          src={member.logo}
-                          alt={`${member.name} logo`}
+                          src={post.FeaturedImage?.url
+                            ? `${process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'}${post.FeaturedImage.url}`
+                            : "/placeholder.svg?height=400&width=600"}
+                          alt={post.Title}
                           fill
-                          className="object-contain"
+                          className="object-cover rounded-t-lg"
                         />
                       </div>
-                    </div>
-                    <h3 className="text-xl font-semibold text-center mt-12 mb-2 text-pink-800">{member.name}</h3>
-                    <p className="text-gray-600 text-center mb-4">{member.description}</p>
-                    <div className="text-center">
-                      <Button
-                        variant="default"
-                        className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300"
-                      >
-                        Learn More
-                        <ExternalLink className="w-4 h-4 ml-2" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            <div className="text-center mt-8">
-              <Link href="/members">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
-                >
-                  View All Members
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-
-        <section id="events" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
-          <BackgroundShapes />
-          <DecorativeShapes />
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
-              Upcoming Events
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              {upcomingEvents.map((event) => (
-                <Card key={event.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full">
-                  <CardHeader className="p-0">
-                    <div className="relative h-48 w-full">
-                      <Image
-                        src={event.photo || "/placeholder.svg?height=400&width=600"}
-                        alt={event.name}
-                        fill
-                        className="object-cover rounded-t-lg"
-                      />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-4 flex-grow">
-                    <h3 className="text-xl font-semibold mb-2">{event.name}</h3>
-                    <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {new Date(event.date).toLocaleDateString()}
+                    </CardHeader>
+                    <CardContent className="p-4 flex-grow">
+                      <h3 className="text-xl font-semibold mb-2">{post.Title}</h3>
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {post.Content[0].children[0].text}
+                      </p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {new Date(post.PublishDate).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center">
+                          <User className="h-4 w-4 mr-1" />
+                          {post.Author}
+                        </div>
                       </div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {event.location}
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="p-4">
-                    <div className="flex flex-col gap-2 w-full">
-                      <Link href={`/events/${event.id}`} passHref>
+                    </CardContent>
+                    <CardFooter className="p-4">
+                      <Link href={`/blog/${post.Slug}`} passHref>
                         <Button
                           variant="default"
                           className="w-full bg-pink-500 hover:bg-pink-600 text-white"
                         >
-                          Learn More
+                          Read More
                         </Button>
                       </Link>
-                      <Button
-                        variant="outline"
-                        className="w-full border-pink-500 text-pink-500 hover:bg-pink-50"
-                        onClick={() => window.open(event.registrationLink, '_blank')}
-                      >
-                        Register
-                      </Button>
-                    </div>
-                  </CardFooter>
-                </Card>
-              ))}
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+              <div className="text-center mt-8">
+                <Link href="/blog">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                  >
+                    View All Blog Posts
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="text-center mt-8">
-              <Link href="/events">
+          </section>
+
+          <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+            <BackgroundShapes />
+            <DecorativeShapes />
+            <div className="container mx-auto px-4 relative z-10">
+              <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+                Our Members
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {featuredMembers.map((member, index) => (
+                  <Card key={member.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={member.banner}
+                        alt={`${member.name} banner`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <CardContent className="relative p-6">
+                      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                        <div className="w-24 h-24 relative bg-white rounded-full shadow-md overflow-hidden border-4 border-white">
+                          <Image
+                            src={member.logo}
+                            alt={`${member.name} logo`}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-semibold text-center mt-12 mb-2 text-pink-800">{member.name}</h3>
+                      <p className="text-gray-600 text-center mb-4">{member.description}</p>
+                      <div className="text-center">
+                        <Button
+                          variant="default"
+                          className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300"
+                        >
+                          Learn More
+                          <ExternalLink className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="text-center mt-8">
+                <Link href="/members">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                  >
+                    View All Members
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section id="events" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
+            <BackgroundShapes />
+            <DecorativeShapes />
+            <div className="container mx-auto px-4 relative z-10">
+              <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
+                Upcoming Events
+              </h2>
+              <div className="grid md:grid-cols-3 gap-8">
+                {upcomingEvents.map((event) => (
+                  <Card key={event.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full">
+                    <CardHeader className="p-0">
+                      <div className="relative h-48 w-full">
+                        <Image
+                          src={event.photo || "/placeholder.svg?height=400&width=600"}
+                          alt={event.name}
+                          fill
+                          className="object-cover rounded-t-lg"
+                        />
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-4 flex-grow">
+                      <h3 className="text-xl font-semibold mb-2">{event.name}</h3>
+                      <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {new Date(event.date).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {event.location}
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="p-4">
+                      <div className="flex flex-col gap-2 w-full">
+                        <Link href={`/events/${event.id}`} passHref>
+                          <Button
+                            variant="default"
+                            className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                          >
+                            Learn More
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="outline"
+                          className="w-full border-pink-500 text-pink-500 hover:bg-pink-50"
+                          onClick={() => window.open(event.registrationLink, '_blank')}
+                        >
+                          Register
+                        </Button>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+              <div className="text-center mt-8">
+                <Link href="/events">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                  >
+                    View All Events
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section id="contact" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+            <BackgroundShapes />
+            <DecorativeShapes />
+            <div className="container mx-auto px-4 text-center relative z-10">
+              <h2 className="text-3xl font-bold mb-8 text-pink-800">Contact Us</h2>
+              <p className="text-lg mb-8 text-pink-700">
+                Get in touch to learn more about our mission or to get involved.
+              </p>
+              <Link href="/contact">
                 <Button
-                  variant="outline"
                   size="lg"
-                  className="border-pink-500 text-pink-500 hover:bg-pink-50"
+                  className="flex items-center mx-auto bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300"
                 >
-                  View All Events
+                  <Mail className="mr-2" />
+                  Contact Us
                 </Button>
               </Link>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
+      </Layout>
 
-        <section id="contact" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
-          <BackgroundShapes />
-          <DecorativeShapes />
-          <div className="container mx-auto px-4 text-center relative z-10">
-            <h2 className="text-3xl font-bold mb-8 text-pink-800">Contact Us</h2>
-            <p className="text-lg mb-8 text-pink-700">
-              Get in touch to learn more about our mission or to get involved.
-            </p>
-            <Link href="/contact">
-              <Button
-                size="lg"
-                className="flex items-center mx-auto bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300"
-              >
-                <Mail className="mr-2" />
-                Contact Us
-              </Button>
-            </Link>
-          </div>
-        </section>
-      </main>
-
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-between">
-            {/* Logo and Name */}
-            <div className="flex items-center mb-4 md:mb-0">
-              <Image
-                src="/One Heart.png"
-                alt="One Heart Blacktown Logo"
-                width={48}
-                height={48}
-                className="w-12 h-12 object-contain"
-              />
-              <span className="ml-3 text-lg font-semibold">One Heart Blacktown</span>
-            </div>
-
-            {/* Copyright and Address */}
-            <div className="text-center md:text-right">
-              <p className="mb-2">&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-              <div className="flex items-center justify-center md:justify-end">
-                <MapPin className="mr-2 h-4 w-4" />
-                <span className="text-sm">
-                  Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, 
-                  Blacktown NSW 2148, Australia
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      
     </div>
   );
 }
