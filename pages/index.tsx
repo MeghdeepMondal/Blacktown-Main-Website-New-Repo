@@ -688,8 +688,6 @@ export default function Homepage() {
           </section>
         </main>
       </Layout>
-
-      
     </div>
   );
 }
