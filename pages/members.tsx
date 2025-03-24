@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { ExternalLink, MapPin } from 'lucide-react'
+import Layout from '@/components/Layout'
 
 // Mock data for members
 const members = [
@@ -65,119 +66,58 @@ const members = [
 export default function MembersPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
-      <header className="bg-black text-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/One Heart.png"
-              alt="One Heart Blacktown Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 object-contain"
-            />
-            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
-          </Link>
-          <nav>
-            <ul className="flex space-x-6">
-              <li>
-                <Link href="/" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/members" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Members
-                </Link>
-              </li>
-              <li>
-                <Link href="/opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Opportunities
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <Layout>
 
-      <main className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-pink-800">Our Members</h1>
-        <p className="text-lg text-center mb-12 max-w-2xl mx-auto text-pink-700">
-          Get to know the organizations that make up One Heart Blacktown. Together, we&apos;re working to make our community stronger.
-        </p>
+        <main className="container mx-auto px-4 py-8">
+          <h1 className="text-4xl font-bold text-center mb-8 text-pink-800">Our Members</h1>
+          <p className="text-lg text-center mb-12 max-w-2xl mx-auto text-pink-700">
+            Get to know the organizations that make up One Heart Blacktown. Together, we&apos;re working to make our community stronger.
+          </p>
 
-        <div className="space-y-12">
-          {members.map((member, index) => (
-            <Card key={member.id} className="relative overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="relative h-48 md:h-64 overflow-hidden">
-                <Image
-                  src={member.banner}
-                  alt={`${member.name} banner`}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <CardContent className="relative p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
-                <div className="w-32 h-32 relative flex-shrink-0 bg-white rounded-full shadow-md overflow-hidden -mt-16 border-4 border-white">
+          <div className="space-y-12">
+            {members.map((member, index) => (
+              <Card key={member.id} className="relative overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="relative h-48 md:h-64 overflow-hidden">
                   <Image
-                    src={member.logo}
-                    alt={`${member.name} logo`}
+                    src={member.banner}
+                    alt={`${member.name} banner`}
                     fill
-                    className="object-contain"
+                    className="object-cover"
                   />
                 </div>
-                <div className="flex-grow text-center md:text-left">
-                  <h2 className="text-2xl font-semibold mb-2 text-pink-800">{member.name}</h2>
-                  <p className="flex items-center justify-center md:justify-start text-gray-600 mb-4">
-                    <MapPin className="w-5 h-5 mr-2 text-pink-500" />
-                    {member.address}
-                  </p>
-                  <p className="text-gray-700">{member.description}</p>
-                </div>
-              </CardContent>
-              <CardFooter className="relative bg-gray-100 p-4 flex justify-center md:justify-end">
-                <Button
-                  variant="default"
-                  className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300 shadow-md hover:shadow-lg"
-                  onClick={() => window.open(member.website, '_blank')}
-                >
-                  Visit Website
-                  <ExternalLink className="w-4 h-4 ml-2" />
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      </main>
-
-      <footer className="bg-black text-white py-8 mt-12">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2025 One Heart Blacktown. All rights reserved.</p>
-          <div className="mt-4 flex justify-center items-center">
-            <MapPin className="mr-2" />
-            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
+                <CardContent className="relative p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+                  <div className="w-32 h-32 relative flex-shrink-0 bg-white rounded-full shadow-md overflow-hidden -mt-16 border-4 border-white">
+                    <Image
+                      src={member.logo}
+                      alt={`${member.name} logo`}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="flex-grow text-center md:text-left">
+                    <h2 className="text-2xl font-semibold mb-2 text-pink-800">{member.name}</h2>
+                    <p className="flex items-center justify-center md:justify-start text-gray-600 mb-4">
+                      <MapPin className="w-5 h-5 mr-2 text-pink-500" />
+                      {member.address}
+                    </p>
+                    <p className="text-gray-700">{member.description}</p>
+                  </div>
+                </CardContent>
+                <CardFooter className="relative bg-gray-100 p-4 flex justify-center md:justify-end">
+                  <Button
+                    variant="default"
+                    className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300 shadow-md hover:shadow-lg"
+                    onClick={() => window.open(member.website, '_blank')}
+                  >
+                    Visit Website
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
           </div>
-        </div>
-      </footer>
+        </main>
+      </Layout>
     </div>
   )
 }

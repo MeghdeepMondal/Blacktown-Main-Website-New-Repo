@@ -113,7 +113,7 @@ export default function SocialMedia() {
                   Connect With Us
                 </h1>
                 <p className="text-lg md:text-xl text-pink-600 max-w-2xl mx-auto">
-                  Stay updated with One Heart Blacktown's latest news, events, and community activities through our social media channels.
+                  Stay updated with One Heart Blacktown&apos;s latest news, events, and community activities through our social media channels.
                 </p>
               </div>
 
