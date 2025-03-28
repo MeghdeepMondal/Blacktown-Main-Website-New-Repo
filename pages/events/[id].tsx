@@ -4,6 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
 import { Calendar, MapPin, ArrowLeft, ExternalLink } from 'lucide-react'
+import Footer from '@/components/footer'
+import Header from '@/components/header'
 
 interface Event {
   id: string
@@ -64,20 +66,7 @@ export default function EventPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
-      <header className="bg-black text-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/One Heart.png"
-              alt="One Heart Blacktown Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 object-contain"
-            />
-            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-8">
         <Link href="/" className="inline-flex items-center text-pink-600 hover:text-pink-700 mb-6 transition-colors duration-300">
@@ -132,11 +121,7 @@ export default function EventPage() {
         </div>
       </main>
 
-      <footer className="bg-black text-white py-8 mt-12">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
