@@ -41,37 +41,37 @@ const Header: React.FC = () => {
           <nav>
             <ul className="flex space-x-6">
               <li>
-                <Link href="/" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/members" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/members" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   Members
                 </Link>
               </li>
               <li>
-                <Link href="/blog" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/blog" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link href="/Opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/opportunities" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   Opportunities
                 </Link>
               </li>
               <li>
-                <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/about" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-white hover:text-pink-500 transition-colors duration-300">
+                <Link href="/contact" className="text-white hover:text-pink-500 transition-colors duration-300 text-lg">
                   Contact
                 </Link>
               </li>
