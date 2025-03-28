@@ -512,7 +512,7 @@ export default function Homepage() {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="p-4">
+                    <CardFooter className="p-4 flex justify-center">
                       <Link href={`/blog/${post.Slug}`} passHref>
                         <Button
                           variant="default"
