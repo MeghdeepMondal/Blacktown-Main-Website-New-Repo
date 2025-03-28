@@ -56,6 +56,11 @@ const Header: React.FC = () => {
                 </Link>
               </li>
               <li>
+                <Link href="/Opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
+                  Opportunities
+                </Link>
+              </li>
+              <li>
                 <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Events
                 </Link>

@@ -180,10 +180,18 @@ const EventsPage: React.FC = () => {
                             {event.location}
                           </div>
                         </div>
-                        <div className="mt-4">
+                        <div className="mt-4 flex flex-col gap-2">
+                          <Link href={`/events/${event.id}`} passHref>
+                            <Button
+                              variant="default"
+                              className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                            >
+                              Read More
+                            </Button>
+                          </Link>
                           <Button
-                            variant="default"
-                            className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                            variant="outline"
+                            className="w-full border-pink-500 text-pink-500 hover:bg-pink-50"
                             onClick={() => window.open(event.registrationLink, '_blank')}
                           >
                             Register
