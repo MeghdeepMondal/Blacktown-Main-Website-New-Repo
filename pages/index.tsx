@@ -554,7 +554,7 @@ export default function Homepage() {
                         src={member.banner}
                         alt={`${member.name} banner`}
                         fill
-                        className="object-cover"
+                        className="object-cover rounded-t-lg"
                       />
                     </div>
                     <CardContent className="relative p-6">
