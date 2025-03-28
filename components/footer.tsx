@@ -12,9 +12,9 @@ const Footer: React.FC = () => {
             <Image
               src="/One Heart.png"
               alt="One Heart Blacktown Logo"
-              width={48}
-              height={48}
-              className="w-12 h-12 object-contain"
+              width={80}
+              height={80}
+              className="w-20 h-20 object-contain"
             />
             <span className="mt-3 text-lg font-semibold">One Heart Blacktown</span>
           </div>

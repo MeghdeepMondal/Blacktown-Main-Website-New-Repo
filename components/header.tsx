@@ -6,16 +6,17 @@ import { Facebook, Instagram } from 'lucide-react';
 const Header: React.FC = () => {
   return (
     <div className="bg-gradient-to-br from-pink-100 via-white to-pink-100">
-      <header className="bg-black text-white shadow h-22">
+      <header className="bg-black text-white shadow">
         <div className="container mx-auto px-4 py-6 flex justify-between items-center">
           <div className="flex items-center space-x-6">
-          <div className="flex items-center">
+            
+            <div className="flex items-center">
               <Image
                 src="/One Heart.png"
                 alt="One Heart Blacktown Logo"
-                width={64}
-                height={64}
-                className="w-16 h-16 object-contain"
+                width={80}
+                height={80}
+                className="w-20 h-20 object-contain"
               />
               <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
             </div>
@@ -36,6 +37,7 @@ const Header: React.FC = () => {
               </Link>
             </div>
           </div>
+          
           <nav>
             <ul className="flex space-x-6">
               <li>
@@ -46,11 +48,6 @@ const Header: React.FC = () => {
               <li>
                 <Link href="/members" className="text-white hover:text-pink-500 transition-colors duration-300">
                   Members
-                </Link>
-              </li>
-              <li>
-                <Link href="/opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
-                Opportunities
                 </Link>
               </li>
               <li>
