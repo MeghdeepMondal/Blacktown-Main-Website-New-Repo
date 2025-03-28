@@ -196,7 +196,7 @@ const SuperAdminDashboard: React.FC = () => {
             onClick={() => setActiveSection('admins')}
           >
             <Users className="mr-2 h-4 w-4" />
-            Manage Admins
+            Manage Admin Users
           </Button>
           <Button
             className={`w-full justify-start ${
