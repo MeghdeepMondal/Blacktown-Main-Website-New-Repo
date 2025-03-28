@@ -164,7 +164,8 @@ export default function ContactPage() {
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      className="border-pink-200 focus:border-pink-500"
+                      className="border-pink-200 focus:border-pink-500 min-h-[220px]"
+                      rows={8}
                     />
                     <Button 
                       type="submit" 
