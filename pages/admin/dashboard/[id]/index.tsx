@@ -548,7 +548,7 @@ const AdminDashboard: React.FC = () => {
                   </CardHeader>
                   <CardContent className="p-4">
                     {event.photo && (
-                      <div className="mb-4">
+                      <div className="mb-4 flex justify-center items-center">
                         <Image
                           src={event.photo}
                           alt={event.name}
