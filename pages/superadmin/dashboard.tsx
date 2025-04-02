@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, Calendar as CalendarIcon } from 'lucide-react'
+import Footer from '@/components/footer'
+import Header from '@/components/header'
 
 interface AdminRequest {
   id: string
@@ -163,28 +165,7 @@ const SuperAdminDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
-      <header className="bg-black text-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src="/One Heart.png"
-              alt="One Heart Blacktown Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 object-contain"
-            />
-            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
-          </div>
-          <Button
-            variant="ghost"
-            className="text-white hover:text-pink-400 transition-colors duration-300"
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </Button>
-        </div>
-      </header>
+      <Header />
 
       <div className="flex-grow flex">
         {/* Side Pane */}
@@ -418,15 +399,7 @@ const SuperAdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-          <div className="mt-4 flex justify-center items-center">
-            <MapPin className="mr-2" />
-            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

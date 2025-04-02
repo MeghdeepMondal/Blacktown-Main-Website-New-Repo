@@ -31,29 +31,55 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       // Signup logic
       try {
+        console.log('Signup request received:', req.body);
         const { name, description, address, contactDetails, lat, lng, status } = req.body
+        
+        // Validate required fields
+        if (!email || !password || !name) {
+          return res.status(400).json({ message: 'Missing required fields' });
+        }
+        
         const hashedPassword = await bcrypt.hash(password, 10)
+
+        console.log('Creating admin request with data:', {
+          name,
+          email,
+          description,
+          address,
+          contactDetails,
+          lat,
+          lng,
+          status
+        });
 
         const newAdminRequest = await prisma.adminrequests.create({
           data: {
             name,
             email,
             password: hashedPassword,
-            description,
-            address,
-            contactDetails,
-            lat,
-            lng,
-            status,
+            description: description || '',
+            address: address || '',
+            contactDetails: contactDetails || '',
+            lat: lat || 0,
+            lng: lng || 0,
+            status: status || 'PENDING',
             createdAt: new Date(),
             updatedAt: new Date(),
           },
         })
 
-        res.status(201).json({ message: 'Admin request submitted successfully. Please wait for approval.' })
+        console.log('Admin request created successfully:', newAdminRequest);
+        res.status(201).json({ 
+          message: 'Admin request submitted successfully. Please wait for approval.',
+          requestId: newAdminRequest.id
+        })
       } catch (error) {
-        console.error('Signup error:', error)
-        res.status(500).json({ message: 'Error creating admin request' })
+        console.error('Signup error details:', error)
+        // Return more detailed error message
+        res.status(500).json({ 
+          message: 'Error creating admin request', 
+          error: error instanceof Error ? error.message : 'Unknown error' 
+        })
       }
     }
   } else {

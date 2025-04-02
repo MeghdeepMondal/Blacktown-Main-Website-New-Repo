@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { MapPin, Upload, LogOut } from 'lucide-react'
+import { MapPin, Upload, LogOut, AlertCircle } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import Header from '@/components/header'
 import Footer from '@/components/footer'
@@ -15,6 +15,7 @@ import Footer from '@/components/footer'
 const validEmailDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com'];
 
 const isValidEmailDomain = (email: string): boolean => {
+  if (!email.includes('@')) return false;
   const domain = email.split('@')[1];
   return validEmailDomains.includes(domain);
 };
@@ -44,6 +45,8 @@ const AdminAuth: React.FC = () => {
   })
   const [markerPosition, setMarkerPosition] = useState(center)
   const [emailError, setEmailError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const { isLoaded } = useJsApiLoader({
@@ -54,6 +57,9 @@ const AdminAuth: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+    
+    // Clear error message when user starts typing again
+    if (errorMessage) setErrorMessage('');
   }
 
   const handleMapClick = (e: google.maps.MapMouseEvent) => {
@@ -67,12 +73,15 @@ const AdminAuth: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
     
     if (!isLogin && !isValidEmailDomain(formData.email)) {
-      alert('Please use a valid email domain.');
+      setEmailError('Please use a valid email domain.');
       return;
     }
 
+    setIsSubmitting(true);
+    
     const dataToSend = {
       ...formData,
       isLogin,
@@ -80,14 +89,18 @@ const AdminAuth: React.FC = () => {
     }
 
     try {
+      console.log('Sending data:', dataToSend);
+      
       const response = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(dataToSend)
-      })
-      const data = await response.json()
+      });
+      
+      const data = await response.json();
+      console.log('Response received:', data);
       
       if (response.ok) {
         if (isLogin) {
@@ -96,31 +109,40 @@ const AdminAuth: React.FC = () => {
             router.push(`/admin/dashboard/${data.adminId}`)
           } else {
             console.error('Admin ID not received from server')
-            alert('Error: Admin ID not received. Please try again.')
+            setErrorMessage('Error: Admin ID not received. Please try again.');
           }
         } else {
           alert(data.message)
           setIsLogin(true) // Switch to login view after successful signup
         }
       } else {
-        alert(data.message)
+        setErrorMessage(data.message || 'Authentication failed');
+        console.error('Auth error:', data);
       }
     } catch (error) {
       console.error('Error during authentication:', error)
-      alert('An error occurred during authentication')
+      setErrorMessage('An error occurred during authentication. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
       <Header />
-
       <main className="flex-grow flex items-center justify-center p-4">
         <Card className="w-full max-w-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
           <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800 rounded-t-lg">
             <CardTitle>{isLogin ? 'Admin Login' : 'Admin Signup'}</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
+            {errorMessage && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-700 flex items-start">
+                <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-pink-800">Email</Label>
@@ -135,7 +157,7 @@ const AdminAuth: React.FC = () => {
                     setEmailError('');
                   }}
                   onBlur={(e) => {
-                    if (!isLogin && !isValidEmailDomain(e.target.value)) {
+                    if (!isLogin && e.target.value && !isValidEmailDomain(e.target.value)) {
                       setEmailError('Please use a valid email domain.');
                     }
                   }}
@@ -225,8 +247,9 @@ const AdminAuth: React.FC = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                disabled={isSubmitting}
               >
-                {isLogin ? 'Login' : 'Signup'}
+                {isSubmitting ? 'Processing...' : (isLogin ? 'Login' : 'Signup')}
               </Button>
             </form>
             
@@ -234,8 +257,13 @@ const AdminAuth: React.FC = () => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <Button 
                 variant="link" 
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={() => {
+                  setIsLogin(!isLogin);
+                  setErrorMessage('');
+                  setEmailError('');
+                }}
                 className="text-pink-600 hover:text-pink-700"
+                disabled={isSubmitting}
               >
                 {isLogin ? 'Signup' : 'Login'}
               </Button>
