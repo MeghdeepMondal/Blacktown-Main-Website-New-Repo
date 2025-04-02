@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, Calendar as CalendarIcon } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, CalendarIcon, AlertCircle } from 'lucide-react'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 
@@ -19,7 +19,7 @@ interface AdminRequest {
   description: string
   address: string
   contactDetails: string
-  status: 'pending' | 'approved' | 'rejected'
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' // Updated to match actual database values
 }
 
 interface Admin {
@@ -49,6 +49,16 @@ const SuperAdminDashboard: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([])
   const [activeSection, setActiveSection] = useState<'admins' | 'events'>('admins')
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
+  const [loading, setLoading] = useState({
+    adminRequests: true,
+    approvedAdmins: true,
+    events: true
+  })
+  const [error, setError] = useState({
+    adminRequests: '',
+    approvedAdmins: '',
+    events: ''
+  })
 
   useEffect(() => {
     fetchAdminRequests()
@@ -57,38 +67,79 @@ const SuperAdminDashboard: React.FC = () => {
   }, [])
 
   const fetchAdminRequests = async () => {
+    setLoading(prev => ({ ...prev, adminRequests: true }))
+    setError(prev => ({ ...prev, adminRequests: '' }))
+    
     try {
+      console.log('Fetching admin requests...')
       const response = await fetch('/api/superadmin/adminrequests')
-      if (!response.ok) throw new Error('Failed to fetch admin requests')
+      
+      console.log('Admin requests response status:', response.status)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        console.error('Failed to fetch admin requests:', errorData)
+        throw new Error(errorData.message || 'Failed to fetch admin requests')
+      }
+      
       const data = await response.json()
+      console.log('Admin requests data received:', data)
+      
       setAdminRequests(data)
     } catch (error) {
       console.error('Error fetching admin requests:', error)
+      setError(prev => ({ 
+        ...prev, 
+        adminRequests: error instanceof Error ? error.message : 'Failed to fetch admin requests' 
+      }))
+    } finally {
+      setLoading(prev => ({ ...prev, adminRequests: false }))
     }
   }
 
   const fetchApprovedAdmins = async () => {
+    setLoading(prev => ({ ...prev, approvedAdmins: true }))
+    setError(prev => ({ ...prev, approvedAdmins: '' }))
+    
     try {
       const response = await fetch('/api/superadmin/admins')
-      if (!response.ok) throw new Error('Failed to fetch existing admins')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to fetch existing admins')
+      }
       const data = await response.json()
       setApprovedAdmins(data)
     } catch (error) {
       console.error('Error fetching existing admins:', error)
+      setError(prev => ({ 
+        ...prev, 
+        approvedAdmins: error instanceof Error ? error.message : 'Failed to fetch existing admins' 
+      }))
+    } finally {
+      setLoading(prev => ({ ...prev, approvedAdmins: false }))
     }
   }
 
   const fetchAllEvents = async () => {
+    setLoading(prev => ({ ...prev, events: true }))
+    setError(prev => ({ ...prev, events: '' }))
+    
     try {
       const response = await fetch('/api/superadmin/events')
-      if (response.ok) {
-        const data = await response.json()
-        setEvents(data.events)
-      } else {
-        console.error('Failed to fetch events')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to fetch events')
       }
+      const data = await response.json()
+      setEvents(data.events)
     } catch (error) {
       console.error('Error fetching events:', error)
+      setError(prev => ({ 
+        ...prev, 
+        events: error instanceof Error ? error.message : 'Failed to fetch events' 
+      }))
+    } finally {
+      setLoading(prev => ({ ...prev, events: false }))
     }
   }
 
@@ -99,11 +150,17 @@ const SuperAdminDashboard: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action })
       })
-      if (!response.ok) throw new Error(`Failed to ${action} admin request`)
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || `Failed to ${action} admin request`)
+      }
+      
       fetchAdminRequests()
       if (action === 'approve') fetchApprovedAdmins()
     } catch (error) {
       console.error(`Error ${action}ing admin request:`, error)
+      alert(error instanceof Error ? error.message : `Error ${action}ing admin request`)
     }
   }
 
@@ -134,11 +191,11 @@ const SuperAdminDashboard: React.FC = () => {
       } else {
         const errorData = await response.json()
         console.error('Failed to update event:', errorData.message)
-        // You may want to show an error message to the user here
+        alert(`Failed to update event: ${errorData.message}`)
       }
     } catch (error) {
       console.error('Error updating event:', error)
-      // You may want to show an error message to the user here
+      alert(error instanceof Error ? error.message : 'Error updating event')
     }
   }
 
@@ -151,10 +208,13 @@ const SuperAdminDashboard: React.FC = () => {
       if (response.ok) {
         setEvents(events.filter(event => event.id !== id))
       } else {
-        console.error('Failed to delete event')
+        const errorData = await response.json()
+        console.error('Failed to delete event:', errorData.message)
+        alert(`Failed to delete event: ${errorData.message}`)
       }
     } catch (error) {
       console.error('Error deleting event:', error)
+      alert(error instanceof Error ? error.message : 'Error deleting event')
     }
   }
 
@@ -162,6 +222,20 @@ const SuperAdminDashboard: React.FC = () => {
     // Handle logout logic (unchanged)
     router.push('/admin/auth')
   }
+
+  const renderErrorMessage = (message: string) => (
+    <div className="p-4 bg-red-50 border border-red-200 rounded-md text-red-700 flex items-start mb-4">
+      <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+      <span>{message}</span>
+    </div>
+  )
+
+  const renderLoadingState = () => (
+    <div className="p-4 text-center text-gray-500">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mx-auto mb-2"></div>
+      <p>Loading...</p>
+    </div>
+  )
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
@@ -202,44 +276,54 @@ const SuperAdminDashboard: React.FC = () => {
                   <CardTitle>Admin Signup Requests</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>Contact Details</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {adminRequests.map((request) => (
-                        <TableRow key={request.id}>
-                          <TableCell>{request.name}</TableCell>
-                          <TableCell>{request.email}</TableCell>
-                          <TableCell>{request.description}</TableCell>
-                          <TableCell>{request.address}</TableCell>
-                          <TableCell>{request.contactDetails}</TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={() => handleRequestAction(request.id, 'approve')}
-                              className="mr-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                            >
-                              Approve
-                            </Button>
-                            <Button
-                              onClick={() => handleRequestAction(request.id, 'reject')}
-                              variant="destructive"
-                              className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                            >
-                              Reject
-                            </Button>
-                          </TableCell>
+                  {error.adminRequests && renderErrorMessage(error.adminRequests)}
+                  
+                  {loading.adminRequests ? (
+                    renderLoadingState()
+                  ) : adminRequests.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Address</TableHead>
+                          <TableHead>Contact Details</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {adminRequests.map((request) => (
+                          <TableRow key={request.id}>
+                            <TableCell>{request.name}</TableCell>
+                            <TableCell>{request.email}</TableCell>
+                            <TableCell>{request.description}</TableCell>
+                            <TableCell>{request.address}</TableCell>
+                            <TableCell>{request.contactDetails}</TableCell>
+                            <TableCell>
+                              <Button
+                                onClick={() => handleRequestAction(request.id, 'approve')}
+                                className="mr-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                              >
+                                Approve
+                              </Button>
+                              <Button
+                                onClick={() => handleRequestAction(request.id, 'reject')}
+                                variant="destructive"
+                                className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                              >
+                                Reject
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="p-4 text-center text-gray-500">
+                      No pending admin requests found.
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -249,28 +333,38 @@ const SuperAdminDashboard: React.FC = () => {
                   <CardTitle>Existing Admins</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Address</TableHead>
-                        <TableHead>Contact Details</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {approvedAdmins.map((admin) => (
-                        <TableRow key={admin.id}>
-                          <TableCell>{admin.name}</TableCell>
-                          <TableCell>{admin.email}</TableCell>
-                          <TableCell>{admin.description}</TableCell>
-                          <TableCell>{admin.address}</TableCell>
-                          <TableCell>{admin.contactDetails}</TableCell>
+                  {error.approvedAdmins && renderErrorMessage(error.approvedAdmins)}
+                  
+                  {loading.approvedAdmins ? (
+                    renderLoadingState()
+                  ) : approvedAdmins.length > 0 ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Email</TableHead>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Address</TableHead>
+                          <TableHead>Contact Details</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {approvedAdmins.map((admin) => (
+                          <TableRow key={admin.id}>
+                            <TableCell>{admin.name}</TableCell>
+                            <TableCell>{admin.email}</TableCell>
+                            <TableCell>{admin.description}</TableCell>
+                            <TableCell>{admin.address}</TableCell>
+                            <TableCell>{admin.contactDetails}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="p-4 text-center text-gray-500">
+                      No approved admins found.
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </>
@@ -282,7 +376,11 @@ const SuperAdminDashboard: React.FC = () => {
                 <CardTitle>All Events</CardTitle>
               </CardHeader>
               <CardContent>
-                {editingEvent ? (
+                {error.events && renderErrorMessage(error.events)}
+                
+                {loading.events ? (
+                  renderLoadingState()
+                ) : editingEvent ? (
                   <form onSubmit={handleUpdateEvent} className="space-y-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Event Name</Label>
@@ -353,7 +451,7 @@ const SuperAdminDashboard: React.FC = () => {
                       </Button>
                     </div>
                   </form>
-                ) : (
+                ) : events.length > 0 ? (
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -392,6 +490,10 @@ const SuperAdminDashboard: React.FC = () => {
                       ))}
                     </TableBody>
                   </Table>
+                ) : (
+                  <div className="p-4 text-center text-gray-500">
+                    No events found.
+                  </div>
                 )}
               </CardContent>
             </Card>
