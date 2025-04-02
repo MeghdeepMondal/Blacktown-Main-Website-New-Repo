@@ -7,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Upload } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
-import Footer from '@/components/footer'
 
 const containerStyle = {
   width: '100%',
@@ -44,6 +44,8 @@ interface EventData {
   lng: number
   photo?: string
   registrationLink?: string
+  hasOpportunity?: boolean
+  opportunity?: string
 }
 
 const AdminDashboard: React.FC = () => {
@@ -60,7 +62,9 @@ const AdminDashboard: React.FC = () => {
     description: '',
     lat: center.lat,
     lng: center.lng,
-    registrationLink: ''
+    registrationLink: '',
+    hasOpportunity: false,
+    opportunity: ''
   })
   const [showAddEventForm, setShowAddEventForm] = useState(false)
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
@@ -108,6 +112,10 @@ const AdminDashboard: React.FC = () => {
     setNewEvent(prev => ({ ...prev, [name]: value }))
   }
 
+  const handleSwitchChange = (checked: boolean) => {
+    setNewEvent(prev => ({ ...prev, hasOpportunity: checked }))
+  }
+
   const handleAdminInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setEditedAdminData(prev => ({ ...prev!, [name]: value }))
@@ -136,21 +144,33 @@ const AdminDashboard: React.FC = () => {
       formData.append('adminId', id as string)
       formData.append('registrationLink', newEvent.registrationLink || '')
       
+      // Explicitly convert boolean to string 'true' or 'false'
+      formData.append('hasOpportunity', newEvent.hasOpportunity ? 'true' : 'false')
+      
+      // Only append opportunity if hasOpportunity is true
+      if (newEvent.hasOpportunity) {
+        formData.append('opportunity', newEvent.opportunity || '')
+      }
+      
       if (eventPhoto) {
         formData.append('photo', eventPhoto)
       }
-
+  
+      // Log the form data for debugging
+      console.log('Submitting hasOpportunity:', newEvent.hasOpportunity)
+      console.log('Submitting opportunity:', newEvent.opportunity)
+  
       const url = isEditing ? `/api/admin/events/${newEvent.id}` : '/api/events'
       const method = isEditing ? 'PUT' : 'POST'
       const response = await fetch(url, {
         method,
         body: formData,
       })
-
+  
       if (!response.ok) {
         throw new Error(`Failed to ${isEditing ? 'update' : 'add'} event`)
       }
-
+  
       const eventData = await response.json()
       if (isEditing) {
         setEvents(prev => prev.map(event => event.id === eventData.id ? eventData : event))
@@ -210,7 +230,9 @@ const AdminDashboard: React.FC = () => {
       description: '',
       lat: center.lat,
       lng: center.lng,
-      registrationLink: ''
+      registrationLink: '',
+      hasOpportunity: false,
+      opportunity: ''
     })
     setMarkerPosition(center)
     setShowAddEventForm(false)
@@ -510,6 +532,34 @@ const AdminDashboard: React.FC = () => {
                   onChange={handlePhotoChange}
                 />
               </div>
+              
+              {/* New Opportunity Toggle and Field */}
+              <div className="flex items-center space-x-2 pt-4 border-t">
+                <Switch 
+                  id="hasOpportunity" 
+                  checked={newEvent.hasOpportunity} 
+                  onCheckedChange={handleSwitchChange}
+                />
+                <Label htmlFor="hasOpportunity" className="font-medium">Add Volunteer Opportunity</Label>
+              </div>
+              
+              {newEvent.hasOpportunity && (
+                <div className="space-y-2 pl-4 border-l-2 border-pink-200">
+                  <Label htmlFor="opportunity">Opportunity Description</Label>
+                  <Textarea
+                    id="opportunity"
+                    placeholder="Describe the volunteer opportunity for this event..."
+                    name="opportunity"
+                    value={newEvent.opportunity}
+                    onChange={handleInputChange}
+                    className="min-h-[120px]"
+                  />
+                  <p className="text-sm text-gray-500">
+                    This description will be displayed on the Opportunities page to attract volunteers.
+                  </p>
+                </div>
+              )}
+              
               {isLoaded && (
                 <div className="space-y-2">
                   <Label>Event Location (Click to set)</Label>
@@ -549,9 +599,9 @@ const AdminDashboard: React.FC = () => {
                   </CardHeader>
                   <CardContent className="p-4">
                     {event.photo && (
-                      <div className="mb-4 flex justify-center items-center">
+                      <div className="mb-4">
                         <Image
-                          src={event.photo}
+                          src={event.photo || "/placeholder.svg"}
                           alt={event.name}
                           width={300}
                           height={200}
@@ -567,6 +617,12 @@ const AdminDashboard: React.FC = () => {
                         Registration: <a href={event.registrationLink} target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:underline">Link</a>
                       </p>
                     )}
+                    {event.hasOpportunity && (
+                      <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
+                        <p className="font-medium text-green-700">Volunteer Opportunity</p>
+                        <p className="text-sm text-green-600">{event.opportunity}</p>
+                      </div>
+                    )}
                     <div className="mt-4 flex justify-end space-x-2">
                       <Button onClick={() => handleEditEvent(event)} className="bg-pink-100 text-pink-600 hover:bg-pink-200">Edit</Button>
                       <Button variant="destructive" onClick={() => handleDeleteEvent(event.id)} className="bg-red-500 hover:bg-red-600">Delete</Button>
@@ -581,7 +637,15 @@ const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      <Footer />
+      <footer className="bg-black text-white py-8">
+        <div className="container mx-auto px-4 text-center">
+          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
+          <div className="mt-4 flex justify-center items-center">
+            <MapPin className="mr-2" />
+            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

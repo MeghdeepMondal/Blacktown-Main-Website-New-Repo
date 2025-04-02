@@ -1,126 +1,215 @@
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import { Button } from "../components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import Layout from '../components/Layout';
-
-type Frequency = 'once-off' | 'weekly' | 'monthly';
+import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
+import Image from 'next/image'
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Calendar, MapPin, Search, X, ExternalLink } from 'lucide-react'
+import Header from '@/components/header'
+import Footer from '@/components/footer'
 
 interface Opportunity {
-  id: number;
-  name: string;
-  logo: string;
-  organizer: string;
-  location: string;
-  frequency: Frequency;
+  id: string
+  name: string
+  date: string
+  location: string
+  description: string
+  opportunity: string
+  photo?: string
+  registrationLink?: string
 }
 
-const opportunities: Opportunity[] = [
-  {
-    id: 1,
-    name: "Community Clean-up",
-    logo: "/placeholder.svg?height=100&width=100&text=Clean-up",
-    organizer: "Green Earth",
-    location: "Blacktown Park",
-    frequency: "monthly"
-  },
-  {
-    id: 2,
-    name: "Youth Mentoring Program",
-    logo: "/placeholder.svg?height=100&width=100&text=Mentoring",
-    organizer: "Future Leaders",
-    location: "Blacktown Community Center",
-    frequency: "weekly"
-  },
-  {
-    id: 3,
-    name: "Charity Fun Run",
-    logo: "/placeholder.svg?height=100&width=100&text=Fun+Run",
-    organizer: "Blacktown Runners",
-    location: "Blacktown Showground",
-    frequency: "once-off"
-  },
-  // Add more opportunities as needed
-];
-
-export default function OpportunitiesPage() {
-  const [searchName, setSearchName] = useState('');
-  const [searchLocation, setSearchLocation] = useState('');
-  const [filterFrequency, setFilterFrequency] = useState<Frequency | 'all'>('all');
-  const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>(opportunities);
+const OpportunitiesPage: React.FC = () => {
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([])
+  const [filteredOpportunities, setFilteredOpportunities] = useState<Opportunity[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+  const router = useRouter()
 
   useEffect(() => {
-    const filtered = opportunities.filter(opportunity => 
-      opportunity.name.toLowerCase().includes(searchName.toLowerCase()) &&
-      opportunity.location.toLowerCase().includes(searchLocation.toLowerCase()) &&
-      (filterFrequency === 'all' || opportunity.frequency === filterFrequency)
-    );
-    setFilteredOpportunities(filtered);
-  }, [searchName, searchLocation, filterFrequency]);
+    const fetchOpportunities = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch('/api/opportunities')
+        if (!response.ok) {
+          throw new Error('Failed to fetch opportunities')
+        }
+        const data = await response.json()
+        setOpportunities(data)
+        setFilteredOpportunities(data)
+      } catch (error) {
+        console.error('Error fetching opportunities:', error)
+        setError('Failed to load opportunities. Please try again.')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchOpportunities()
+  }, [])
+
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredOpportunities(opportunities)
+    } else {
+      const filtered = opportunities.filter(
+        (opportunity) =>
+          opportunity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          opportunity.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          opportunity.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          opportunity.opportunity.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      setFilteredOpportunities(filtered)
+    }
+  }, [searchTerm, opportunities])
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+  }
+
+  const clearSearch = () => {
+    setSearchTerm('')
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }
 
   return (
-    <Layout>
-      <div className="min-h-screen bg-gray-100 py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl font-bold mb-8 text-center">Opportunities</h1>
-          
-          <div className="mb-8 flex flex-col md:flex-row gap-4">
-            <input
-              type="text"
-              placeholder="Search by event name"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-            />
-            <input
-              type="text"
-              placeholder="Search by location"
-              value={searchLocation}
-              onChange={(e) => setSearchLocation(e.target.value)}
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-            />
-            <select
-              value={filterFrequency}
-              onChange={(e) => setFilterFrequency(e.target.value as Frequency | 'all')}
-              className="w-full md:w-[180px] px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-            >
-              <option value="all">All frequencies</option>
-              <option value="once-off">Once-off</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-            </select>
-          </div>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-white to-pink-100">
+      <Header />
 
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-pink-800 mb-4">
+            Volunteer Opportunities
+          </h1>
+          <p className="text-lg md:text-xl text-pink-600 max-w-2xl mx-auto">
+            Join us in making a difference in our community. Find volunteer opportunities that match your skills and interests.
+          </p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative max-w-md mx-auto mb-8">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Search opportunities..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="pl-10 pr-10 py-2 border-2 border-pink-200 focus:border-pink-400 rounded-full"
+            />
+            {searchTerm && (
+              <button
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X size={18} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-12">
+            <p className="text-red-500">{error}</p>
+            <Button
+              onClick={() => window.location.reload()}
+              className="mt-4"
+              variant="outline"
+            >
+              Try Again
+            </Button>
+          </div>
+        ) : filteredOpportunities.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No volunteer opportunities found.</p>
+            {searchTerm && (
+              <p className="text-gray-500 mt-2">
+                Try adjusting your search or check back later for new opportunities.
+              </p>
+            )}
+          </div>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredOpportunities.map((opportunity) => (
-              <Card key={opportunity.id} className="bg-white shadow-lg">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
+              <Card
+                key={opportunity.id}
+                className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 overflow-hidden flex flex-col"
+              >
+                {opportunity.photo ? (
+                  <div className="relative h-48 w-full">
                     <Image
-                      src={opportunity.logo}
-                      alt={`${opportunity.name} logo`}
-                      width={50}
-                      height={50}
-                      className="rounded-full"
+                      src={opportunity.photo || "/placeholder.svg"}
+                      alt={opportunity.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="transition-transform duration-300 hover:scale-105"
                     />
-                    <span className="text-sm font-medium text-gray-500 capitalize">{opportunity.frequency}</span>
                   </div>
-                  <CardTitle className="text-xl font-bold mt-2">{opportunity.name}</CardTitle>
+                ) : (
+                  <div className="h-48 bg-gradient-to-r from-pink-200 to-pink-300 flex items-center justify-center">
+                    <h3 className="text-2xl font-bold text-white">{opportunity.name}</h3>
+                  </div>
+                )}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl text-pink-800">{opportunity.name}</CardTitle>
+                  <CardDescription className="flex items-center text-pink-600">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    {formatDate(opportunity.date)}
+                  </CardDescription>
+                  <CardDescription className="flex items-center text-pink-600">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {opportunity.location}
+                  </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-2"><strong>Organizer:</strong> {opportunity.organizer}</p>
-                  <p className="text-gray-600 mb-4"><strong>Location:</strong> {opportunity.location}</p>
-                  <Button className="w-full bg-pink-500 text-white hover:bg-pink-600">Learn More</Button>
+                <CardContent className="flex-grow">
+                  <div className="bg-green-50 p-3 rounded-md border border-green-200 mb-3">
+                    <h4 className="font-medium text-green-800 mb-1">Volunteer Opportunity</h4>
+                    <p className="text-green-700">{opportunity.opportunity}</p>
+                  </div>
+                  <p className="text-gray-600 line-clamp-3">{opportunity.description}</p>
                 </CardContent>
+                <CardFooter className="pt-0 flex justify-between">
+                  <Button
+                    onClick={() => router.push(`/events/${opportunity.id}`)}
+                    variant="outline"
+                    className="text-pink-600 border-pink-200 hover:bg-pink-50"
+                  >
+                    View Details
+                  </Button>
+                  {opportunity.registrationLink && (
+                    <Button
+                      onClick={() => window.open(opportunity.registrationLink, '_blank')}
+                      className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white"
+                    >
+                      Register
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  )}
+                </CardFooter>
               </Card>
             ))}
           </div>
+        )}
+      </main>
 
-          {filteredOpportunities.length === 0 && (
-            <p className="text-center text-gray-500 mt-8">No opportunities found matching your criteria.</p>
-          )}
-        </div>
-      </div>
-    </Layout>
-  );
+      <Footer />
+    </div>
+  )
 }
+
+export default OpportunitiesPage

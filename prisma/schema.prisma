@@ -52,8 +52,10 @@ model events {
   updatedAt   DateTime @db.Date
   adminId     String   @db.ObjectId
   admin       admins   @relation(fields: [adminId], references: [id])
-  photo       String?  // New field for storing Cloudinary URL
+  photo       String?  // Field for storing Cloudinary URL
   registrationLink String?
+  hasOpportunity Boolean? @default(false)  // New field to indicate if event has an opportunity
+  opportunity String?    // New field to describe the volunteer opportunity
 }
 
 model members {

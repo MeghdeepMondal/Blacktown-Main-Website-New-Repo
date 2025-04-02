@@ -36,7 +36,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       try {
-        const { name, date, frequency, location, description, lat, lng, registrationLink } = fields
+        const { 
+          name, 
+          date, 
+          frequency, 
+          location, 
+          description, 
+          lat, 
+          lng, 
+          registrationLink,
+          hasOpportunity,
+          opportunity
+        } = fields
+
+        // Debug log to see what's coming in
+        console.log('hasOpportunity field:', hasOpportunity);
+        
+        // Convert hasOpportunity string to boolean properly
+        const hasOpportunityBool = Array.isArray(hasOpportunity) 
+          ? hasOpportunity[0] === 'true' 
+          : String(hasOpportunity) === 'true';
+        
+        console.log('Converted hasOpportunity:', hasOpportunityBool);
 
         let photoUrl = undefined
         if (files.photo) {
@@ -58,6 +79,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             lat: parseFloat(Array.isArray(lat) ? lat[0] : lat),
             lng: parseFloat(Array.isArray(lng) ? lng[0] : lng),
             registrationLink: Array.isArray(registrationLink) ? registrationLink[0] : registrationLink,
+            hasOpportunity: hasOpportunityBool,
+            opportunity: Array.isArray(opportunity) ? opportunity[0] : opportunity,
             ...(photoUrl && { photo: photoUrl }),
             updatedAt: new Date(),
           },
@@ -66,7 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(updatedEvent)
       } catch (error) {
         console.error('Error updating event:', error)
-        res.status(500).json({ message: 'Error updating event' })
+        res.status(500).json({ message: 'Error updating event', error: error instanceof Error ? error.message : 'Unknown error' })
       }
     })
   } else if (req.method === 'DELETE') {

@@ -32,7 +32,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
       });
 
-      const { name, description, date, location, frequency, lat, lng, adminId, registrationLink } = fields;
+      const { 
+        name, 
+        description, 
+        date, 
+        location, 
+        frequency, 
+        lat, 
+        lng, 
+        adminId, 
+        registrationLink,
+        hasOpportunity,
+        opportunity
+      } = fields;
 
       // Upload photo to Cloudinary if provided
       let photoUrl = undefined;
@@ -55,6 +67,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           lng: parseFloat(Array.isArray(lng) ? lng[0] : lng),
           adminId: Array.isArray(adminId) ? adminId[0] : adminId,
           registrationLink: Array.isArray(registrationLink) ? registrationLink[0] : registrationLink,
+          hasOpportunity: Array.isArray(hasOpportunity) 
+            ? hasOpportunity[0] === 'true' 
+            : hasOpportunity === 'true',
+          opportunity: Array.isArray(opportunity) ? opportunity[0] : opportunity,
           photo: photoUrl,
           createdAt: new Date(),
           updatedAt: new Date(),

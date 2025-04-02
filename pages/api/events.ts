@@ -64,6 +64,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             lng: true,
             photo: true,
             registrationLink: true,
+            hasOpportunity: true,
+            opportunity: true,
             createdAt: true,
             updatedAt: true,
           },
@@ -105,7 +107,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
 
           try {
-            const { name, date, frequency, location, description, lat, lng, adminId, registrationLink } = fields
+            const { 
+              name, 
+              date, 
+              frequency, 
+              location, 
+              description, 
+              lat, 
+              lng, 
+              adminId, 
+              registrationLink,
+              hasOpportunity,
+              opportunity
+            } = fields
+
+            // Debug log to see what's coming in
+            console.log('hasOpportunity field:', hasOpportunity);
+            
+            // Convert hasOpportunity string to boolean properly
+            const hasOpportunityBool = Array.isArray(hasOpportunity) 
+              ? hasOpportunity[0] === 'true' 
+              : String(hasOpportunity) === 'true';
+            
+            console.log('Converted hasOpportunity:', hasOpportunityBool);
 
             let photoUrl
             if (files.photo) {
@@ -129,6 +153,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 lng: parseFloat(Array.isArray(lng) ? lng[0] : lng),
                 adminId: Array.isArray(adminId) ? adminId[0] : adminId,
                 registrationLink: Array.isArray(registrationLink) ? registrationLink[0] : registrationLink,
+                hasOpportunity: hasOpportunityBool,
+                opportunity: Array.isArray(opportunity) ? opportunity[0] : opportunity,
                 photo: photoUrl,
                 createdAt: now,
                 updatedAt: now,
