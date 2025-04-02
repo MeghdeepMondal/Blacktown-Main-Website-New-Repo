@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Upload } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+import Footer from '@/components/footer'
 
 const containerStyle = {
   width: '100%',
@@ -580,15 +581,7 @@ const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-          <div className="mt-4 flex justify-center items-center">
-            <MapPin className="mr-2" />
-            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
