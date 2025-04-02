@@ -9,6 +9,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { MapPin, Upload, LogOut } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+import Header from '@/components/header'
+import Footer from '@/components/footer'
 
 const validEmailDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com'];
 
@@ -73,7 +75,8 @@ const AdminAuth: React.FC = () => {
 
     const dataToSend = {
       ...formData,
-      isLogin
+      isLogin,
+      status: isLogin ? undefined : "PENDING"
     }
 
     try {
@@ -110,54 +113,7 @@ const AdminAuth: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
-      <header className="bg-black text-white shadow">
-        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
-          <div className="flex items-center">
-            <Image
-              src="/One Heart.png"
-              alt="One Heart Blacktown Logo"
-              width={64}
-              height={64}
-              className="w-16 h-16 object-contain"
-            />
-            <h1 className="ml-4 text-2xl font-bold">One Heart Blacktown</h1>
-          </div>
-          <nav>
-            <ul className="flex space-x-6">
-              <li>
-                <Link href="/" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link href="/opportunities" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Opportunities
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link href="/events" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Events
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-white hover:text-pink-500 transition-colors duration-300">
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-grow flex items-center justify-center p-4">
         <Card className="w-full max-w-2xl bg-white shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-200">
@@ -288,15 +244,7 @@ const AdminAuth: React.FC = () => {
         </Card>
       </main>
 
-      <footer className="bg-black text-white py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-          <div className="mt-4 flex justify-center items-center">
-            <MapPin className="mr-2" />
-            <span>Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, Blacktown NSW 2148 , Blacktown, NSW, Australia, 2148</span>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
