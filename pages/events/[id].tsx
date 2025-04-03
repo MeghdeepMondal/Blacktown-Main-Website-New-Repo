@@ -71,9 +71,9 @@ export default function EventPage() {
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        <Link href="/" className="inline-flex items-center text-pink-600 hover:text-pink-700 mb-6 transition-colors duration-300">
+        <Link href="/events" className="inline-flex items-center text-pink-600 hover:text-pink-700 mb-6 transition-colors duration-300">
           <ArrowLeft className="mr-2" />
-          Back to Home
+          Back to Events
         </Link>
 
         <div className="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -98,7 +98,12 @@ export default function EventPage() {
                 {event.location}
               </div>
             </div>
-            <p className="text-gray-700 mb-6 leading-relaxed text-lg max-w-3xl mx-auto">{event.description}</p>
+            
+            {/* Rich text description */}
+            <div 
+              className="text-gray-700 mb-6 leading-relaxed text-lg max-w-3xl mx-auto prose prose-pink"
+              dangerouslySetInnerHTML={{ __html: event.description }}
+            />
             
             {/* Volunteer Opportunity Section */}
             {event.hasOpportunity && event.opportunity && (
@@ -107,7 +112,10 @@ export default function EventPage() {
                   <Users className="mr-2 h-5 w-5" />
                   Volunteer Opportunity
                 </h2>
-                <p className="text-green-700 leading-relaxed">{event.opportunity}</p>
+                <div 
+                  className="text-green-700 leading-relaxed prose prose-green"
+                  dangerouslySetInnerHTML={{ __html: event.opportunity }}
+                />
                 <div className="mt-4">
                   <Button
                     variant="default"

@@ -5,11 +5,11 @@ import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Upload } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+import RichTextEditor from '@/components/rich-text-editor'
 
 const containerStyle = {
   width: '100%',
@@ -145,6 +145,7 @@ const AdminDashboard: React.FC = () => {
       formData.append('registrationLink', newEvent.registrationLink || '')
       
       // Explicitly convert boolean to string 'true' or 'false'
+      console.log('hasOpportunity before append:', newEvent.hasOpportunity)
       formData.append('hasOpportunity', newEvent.hasOpportunity ? 'true' : 'false')
       
       // Only append opportunity if hasOpportunity is true
@@ -155,22 +156,22 @@ const AdminDashboard: React.FC = () => {
       if (eventPhoto) {
         formData.append('photo', eventPhoto)
       }
-  
-      // Log the form data for debugging
-      console.log('Submitting hasOpportunity:', newEvent.hasOpportunity)
-      console.log('Submitting opportunity:', newEvent.opportunity)
-  
+
       const url = isEditing ? `/api/admin/events/${newEvent.id}` : '/api/events'
       const method = isEditing ? 'PUT' : 'POST'
+      
+      console.log('Submitting to URL:', url)
+      console.log('Method:', method)
+      
       const response = await fetch(url, {
         method,
         body: formData,
       })
-  
+
       if (!response.ok) {
         throw new Error(`Failed to ${isEditing ? 'update' : 'add'} event`)
       }
-  
+
       const eventData = await response.json()
       if (isEditing) {
         setEvents(prev => prev.map(event => event.id === eventData.id ? eventData : event))
@@ -402,7 +403,7 @@ const AdminDashboard: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Description</Label>
-                    <Textarea
+                    <Input
                       id="description"
                       name="description"
                       value={editedAdminData?.description || ''}
@@ -504,13 +505,11 @@ const AdminDashboard: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Description"
-                  name="description"
+                <RichTextEditor
                   value={newEvent.description}
-                  onChange={handleInputChange}
-                  required
+                  onChange={(value) => setNewEvent(prev => ({ ...prev, description: value }))}
+                  placeholder="Describe your event..."
+                  minHeight="200px"
                 />
               </div>
               <div className="space-y-2">
@@ -546,13 +545,11 @@ const AdminDashboard: React.FC = () => {
               {newEvent.hasOpportunity && (
                 <div className="space-y-2 pl-4 border-l-2 border-pink-200">
                   <Label htmlFor="opportunity">Opportunity Description</Label>
-                  <Textarea
-                    id="opportunity"
+                  <RichTextEditor
+                    value={newEvent.opportunity || ''}
+                    onChange={(value) => setNewEvent(prev => ({ ...prev, opportunity: value }))}
                     placeholder="Describe the volunteer opportunity for this event..."
-                    name="opportunity"
-                    value={newEvent.opportunity}
-                    onChange={handleInputChange}
-                    className="min-h-[120px]"
+                    minHeight="150px"
                   />
                   <p className="text-sm text-gray-500">
                     This description will be displayed on the Opportunities page to attract volunteers.
@@ -567,7 +564,14 @@ const AdminDashboard: React.FC = () => {
                     mapContainerStyle={containerStyle}
                     center={center}
                     zoom={10}
-                    onClick={handleMapClick}
+                    onClick={(e) => {
+                      if (e.latLng) {
+                        const lat = e.latLng.lat();
+                        const lng = e.latLng.lng();
+                        setMarkerPosition({ lat, lng });
+                        setNewEvent(prev => ({ ...prev, lat, lng }));
+                      }
+                    }}
                   >
                     <Marker position={markerPosition} />
                   </GoogleMap>
@@ -609,7 +613,7 @@ const AdminDashboard: React.FC = () => {
                         />
                       </div>
                     )}
-                    <p className="mt-2 text-gray-600">{event.description}</p>
+                    <div className="mt-2 text-gray-600" dangerouslySetInnerHTML={{ __html: event.description }} />
                     <p className="mt-2 text-gray-600">Location: {event.location}</p>
                     <p className="mt-2 text-gray-600">Frequency: {event.frequency}</p>
                     {event.registrationLink && (
@@ -620,7 +624,7 @@ const AdminDashboard: React.FC = () => {
                     {event.hasOpportunity && (
                       <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-md">
                         <p className="font-medium text-green-700">Volunteer Opportunity</p>
-                        <p className="text-sm text-green-600">{event.opportunity}</p>
+                        <div className="text-sm text-green-600" dangerouslySetInnerHTML={{ __html: event.opportunity || '' }} />
                       </div>
                     )}
                     <div className="mt-4 flex justify-end space-x-2">
