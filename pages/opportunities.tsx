@@ -181,9 +181,8 @@ const OpportunitiesPage: React.FC = () => {
                     <h4 className="font-medium text-green-800 mb-1">Volunteer Opportunity</h4>
                     <p className="text-green-700">{opportunity.opportunity}</p>
                   </div>
-                  <p className="text-gray-600 line-clamp-3">{opportunity.description}</p>
                 </CardContent>
-                <CardFooter className="pt-0 flex justify-between">
+                <CardFooter className="pt-0 flex justify-center">
                   <Button
                     onClick={() => router.push(`/events/${opportunity.id}`)}
                     variant="outline"
@@ -191,15 +190,6 @@ const OpportunitiesPage: React.FC = () => {
                   >
                     View Details
                   </Button>
-                  {opportunity.registrationLink && (
-                    <Button
-                      onClick={() => window.open(opportunity.registrationLink, '_blank')}
-                      className="bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white"
-                    >
-                      Register
-                      <ExternalLink className="ml-2 h-4 w-4" />
-                    </Button>
-                  )}
                 </CardFooter>
               </Card>
             ))}

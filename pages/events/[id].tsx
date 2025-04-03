@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Calendar, MapPin, ArrowLeft, ExternalLink } from 'lucide-react'
+import { Calendar, MapPin, ArrowLeft, ExternalLink, Users } from 'lucide-react'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
 
@@ -15,6 +15,8 @@ interface Event {
   location: string
   photo?: string
   registrationLink?: string
+  hasOpportunity?: boolean
+  opportunity?: string
 }
 
 export default function EventPage() {
@@ -97,16 +99,39 @@ export default function EventPage() {
               </div>
             </div>
             <p className="text-gray-700 mb-6 leading-relaxed text-lg max-w-3xl mx-auto">{event.description}</p>
+            
+            {/* Volunteer Opportunity Section */}
+            {event.hasOpportunity && event.opportunity && (
+              <div className="mb-8 p-6 bg-green-50 border border-green-200 rounded-lg max-w-3xl mx-auto">
+                <h2 className="flex items-center text-xl font-semibold text-green-800 mb-3">
+                  <Users className="mr-2 h-5 w-5" />
+                  Volunteer Opportunity
+                </h2>
+                <p className="text-green-700 leading-relaxed">{event.opportunity}</p>
+                <div className="mt-4">
+                  <Button
+                    variant="default"
+                    className="bg-green-600 hover:bg-green-700 text-white transition-colors duration-300"
+                    onClick={() => router.push('/opportunities')}
+                  >
+                    View All Opportunities
+                  </Button>
+                </div>
+              </div>
+            )}
+            
             <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto">
-              <Button
-                variant="default"
-                size="lg"
-                className="flex-1 bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300 text-lg py-6"
-                onClick={() => window.open(event.registrationLink, '_blank')}
-              >
-                Register for Event
-                <ExternalLink className="ml-2 h-5 w-5" />
-              </Button>
+              {event.registrationLink && (
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="flex-1 bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300 text-lg py-6"
+                  onClick={() => window.open(event.registrationLink, '_blank')}
+                >
+                  Register for Event
+                  <ExternalLink className="ml-2 h-5 w-5" />
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="lg"

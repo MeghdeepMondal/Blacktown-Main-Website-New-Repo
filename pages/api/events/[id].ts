@@ -10,9 +10,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const event = await prisma.events.findUnique({
         where: { id: String(id) },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          date: true,
+          location: true,
+          photo: true,
+          registrationLink: true,
+          hasOpportunity: true,
+          opportunity: true,
+          createdAt: true,
+          updatedAt: true,
+        }
       })
+      
       if (event) {
-        res.status(200).json({ event })
+        // Format dates for JSON response
+        const formattedEvent = {
+          ...event,
+          date: event.date.toISOString(),
+          createdAt: event.createdAt.toISOString(),
+          updatedAt: event.updatedAt.toISOString(),
+        }
+        
+        res.status(200).json({ event: formattedEvent })
       } else {
         res.status(404).json({ message: 'Event not found' })
       }
