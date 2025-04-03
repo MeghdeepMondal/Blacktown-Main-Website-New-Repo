@@ -241,7 +241,7 @@ export default function OpportunitiesPage() {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute top-2 right-2 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <div className="absolute top-2 right-2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
                     Volunteer
                   </div>
                 </div>
@@ -274,17 +274,8 @@ export default function OpportunitiesPage() {
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <Link href={`/events/${opportunity.id}`} passHref>
-                    <Button variant="default">View Details</Button>
+                    <Button className="bg-pink-400 hover:bg-pink-600" variant="default">View Details</Button>
                   </Link>
-                  {opportunity.registrationLink && (
-                    <Button 
-                      variant="outline" 
-                      onClick={() => window.open(opportunity.registrationLink, '_blank')}
-                      className="flex items-center"
-                    >
-                      Register <ExternalLink className="ml-1 h-4 w-4" />
-                    </Button>
-                  )}
                 </CardFooter>
               </Card>
             ))}
