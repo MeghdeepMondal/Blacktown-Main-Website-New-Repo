@@ -59,24 +59,58 @@ const SuperAdminDashboard: React.FC = () => {
     approvedAdmins: '',
     events: ''
   })
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [authChecking, setAuthChecking] = useState(true)
 
   useEffect(() => {
-    fetchAdminRequests()
-    fetchApprovedAdmins()
-    fetchAllEvents()
-  }, [])
+    // Check if user is authenticated
+    const token = localStorage.getItem('superadminToken')
+    
+    if (!token) {
+      router.push('/superadmin/login')
+      return
+    }
+    
+    // Verify token on the client side (basic check)
+    try {
+      // In a real app, you might want to verify the token with the server
+      setIsAuthenticated(true)
+      setAuthChecking(false)
+      
+      // Fetch data only if authenticated
+      fetchAdminRequests()
+      fetchApprovedAdmins()
+      fetchAllEvents()
+    } catch (error) {
+      console.error('Authentication error:', error)
+      localStorage.removeItem('superadminToken')
+      router.push('/superadmin/login')
+    }
+  }, [router])
 
   const fetchAdminRequests = async () => {
     setLoading(prev => ({ ...prev, adminRequests: true }))
     setError(prev => ({ ...prev, adminRequests: '' }))
     
     try {
+      const token = localStorage.getItem('superadminToken')
       console.log('Fetching admin requests...')
-      const response = await fetch('/api/superadmin/adminrequests')
+      const response = await fetch('/api/superadmin/adminrequests', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       
       console.log('Admin requests response status:', response.status)
       
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Handle authentication errors
+          localStorage.removeItem('superadminToken')
+          router.push('/superadmin/login')
+          return
+        }
+        
         const errorData = await response.json()
         console.error('Failed to fetch admin requests:', errorData)
         throw new Error(errorData.message || 'Failed to fetch admin requests')
@@ -102,11 +136,25 @@ const SuperAdminDashboard: React.FC = () => {
     setError(prev => ({ ...prev, approvedAdmins: '' }))
     
     try {
-      const response = await fetch('/api/superadmin/admins')
+      const token = localStorage.getItem('superadminToken')
+      const response = await fetch('/api/superadmin/admins', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Handle authentication errors
+          localStorage.removeItem('superadminToken')
+          router.push('/superadmin/login')
+          return
+        }
+        
         const errorData = await response.json()
         throw new Error(errorData.message || 'Failed to fetch existing admins')
       }
+      
       const data = await response.json()
       setApprovedAdmins(data)
     } catch (error) {
@@ -125,11 +173,25 @@ const SuperAdminDashboard: React.FC = () => {
     setError(prev => ({ ...prev, events: '' }))
     
     try {
-      const response = await fetch('/api/superadmin/events')
+      const token = localStorage.getItem('superadminToken')
+      const response = await fetch('/api/superadmin/events', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Handle authentication errors
+          localStorage.removeItem('superadminToken')
+          router.push('/superadmin/login')
+          return
+        }
+        
         const errorData = await response.json()
         throw new Error(errorData.message || 'Failed to fetch events')
       }
+      
       const data = await response.json()
       setEvents(data.events)
     } catch (error) {
@@ -145,13 +207,24 @@ const SuperAdminDashboard: React.FC = () => {
 
   const handleRequestAction = async (id: string, action: 'approve' | 'reject') => {
     try {
+      const token = localStorage.getItem('superadminToken')
       const response = await fetch(`/api/superadmin/adminrequests/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ action })
       })
       
       if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Handle authentication errors
+          localStorage.removeItem('superadminToken')
+          router.push('/superadmin/login')
+          return
+        }
+        
         const errorData = await response.json()
         throw new Error(errorData.message || `Failed to ${action} admin request`)
       }
@@ -173,10 +246,12 @@ const SuperAdminDashboard: React.FC = () => {
     if (!editingEvent) return
 
     try {
+      const token = localStorage.getItem('superadminToken')
       const response = await fetch(`/api/superadmin/events/${editingEvent.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           ...editingEvent,
@@ -184,14 +259,21 @@ const SuperAdminDashboard: React.FC = () => {
         }),
       })
 
-      if (response.ok) {
-        const updatedEvent = await response.json()
-        setEvents(prevEvents => prevEvents.map(event => event.id === updatedEvent.id ? updatedEvent : event))
-        setEditingEvent(null)
-      } else {
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Handle authentication errors
+          localStorage.removeItem('superadminToken')
+          router.push('/superadmin/login')
+          return
+        }
+        
         const errorData = await response.json()
         console.error('Failed to update event:', errorData.message)
         alert(`Failed to update event: ${errorData.message}`)
+      } else {
+        const updatedEvent = await response.json()
+        setEvents(prevEvents => prevEvents.map(event => event.id === updatedEvent.id ? updatedEvent : event))
+        setEditingEvent(null)
       }
     } catch (error) {
       console.error('Error updating event:', error)
@@ -201,16 +283,27 @@ const SuperAdminDashboard: React.FC = () => {
 
   const handleDeleteEvent = async (id: string) => {
     try {
+      const token = localStorage.getItem('superadminToken')
       const response = await fetch(`/api/superadmin/events/${id}`, {
         method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       })
 
-      if (response.ok) {
-        setEvents(events.filter(event => event.id !== id))
-      } else {
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          // Handle authentication errors
+          localStorage.removeItem('superadminToken')
+          router.push('/superadmin/login')
+          return
+        }
+        
         const errorData = await response.json()
         console.error('Failed to delete event:', errorData.message)
         alert(`Failed to delete event: ${errorData.message}`)
+      } else {
+        setEvents(events.filter(event => event.id !== id))
       }
     } catch (error) {
       console.error('Error deleting event:', error)
@@ -219,8 +312,8 @@ const SuperAdminDashboard: React.FC = () => {
   }
 
   const handleLogout = () => {
-    // Handle logout logic (unchanged)
-    router.push('/admin/auth')
+    localStorage.removeItem('superadminToken')
+    router.push('/superadmin/login')
   }
 
   const renderErrorMessage = (message: string) => (
@@ -236,6 +329,21 @@ const SuperAdminDashboard: React.FC = () => {
       <p>Loading...</p>
     </div>
   )
+
+  if (authChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 via-white to-pink-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Verifying authentication...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return null // Will redirect to login page
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
@@ -262,6 +370,16 @@ const SuperAdminDashboard: React.FC = () => {
             <CalendarIcon className="mr-2 h-4 w-4" />
             Manage Events
           </Button>
+          <div className="pt-4 mt-auto">
+            <Button
+              variant="outline"
+              className="w-full justify-start border-pink-400 text-pink-600 hover:bg-pink-100"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Main Content */}
