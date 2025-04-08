@@ -1,0 +1,46 @@
+name: Sync Repos
+
+on:
+  push:
+    branches:
+      - main
+  # You can add more triggers, such as scheduled events
+  # schedule:
+  #   - cron: '0 0 * * *'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v2
+
+      - name: Configure Git User
+        run: |
+          # Set global Git config for commits
+          git config --global user.email "megmond2001@gmail.com"
+          git config --global user.name "MeghdeepMondal"
+
+      - name: Clone Source Repository
+        run: |
+          # Clone the source repository
+          git clone https://${{ env.ORG_NAME }}:${{ secrets.GH_PAT }}@github.com/${{ env.ORG_NAME }}/${{ env.SOURCE_REPO }}.git
+          cd ${{ env.SOURCE_REPO }}
+
+          # Fetch and rebase changes onto the latest main branch
+          git fetch origin
+          git rebase -X theirs main
+
+          # Amend the commit author if needed
+          git commit --amend --author="one-heart-blacktown <oneheartblacktown@gmail.com>" --no-edit 
+          
+          # Add destination repository as a remote and push changes
+          git remote add destination https://${{ env.DEST_NAME }}:${{ secrets.GH_PAT }}@github.com/${{ env.DEST_NAME }}/${{ env.DEST_REPO }}.git
+          git push -f destination main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          SOURCE_REPO: ${{ github.event.repository.name }}
+          ORG_NAME: MeghdeepMondal
+          DEST_NAME: one-heart-blacktown
+          DEST_REPO: BlacktownWebsite
