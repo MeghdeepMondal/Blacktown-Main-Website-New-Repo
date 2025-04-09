@@ -26,7 +26,7 @@ const Footer: React.FC = () => {
               <MapPin className="mr-2 h-4 w-4" />
               <span className="text-sm">
                 Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, 
-                Blacktown NSW 2148, Australia
+                Blacktown NSW 2148, Australia.
               </span>
             </div>
           </div>
