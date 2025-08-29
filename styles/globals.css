@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Prevent horizontal overflow on mobile due to absolute decorations/SVGs */
+html, body {
+  overflow-x: hidden;
+}

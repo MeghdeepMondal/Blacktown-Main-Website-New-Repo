@@ -406,7 +406,7 @@ export default function Homepage() {
             </div>
           </section>
 
-          <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+          <section id="about" className="bg-gradient-to-br from-pink-100 to-white py-16 relative overflow-hidden">
             <BackgroundShapes />
             <DecorativeShapes />
             <div className="container mx-auto px-4 relative z-10">
@@ -473,7 +473,7 @@ export default function Homepage() {
             </div>
           </section>
 
-          <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
+          <section id="blog" className="bg-gradient-to-br from-white to-pink-100 py-16 relative overflow-hidden">
             <BackgroundShapes />
             <DecorativeShapes />
             <div className="container mx-auto px-4 relative z-10">
@@ -538,7 +538,7 @@ export default function Homepage() {
             </div>
           </section>
 
-          <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+          <section id="our-members" className="bg-gradient-to-br from-pink-100 to-white py-16 relative overflow-hidden">
             <BackgroundShapes />
             <DecorativeShapes />
             <div className="container mx-auto px-4 relative z-10">
@@ -596,7 +596,7 @@ export default function Homepage() {
             </div>
           </section>
 
-          <section id="events" className="bg-gradient-to-br from-white to-pink-100 py-16 relative">
+          <section id="events" className="bg-gradient-to-br from-white to-pink-100 py-16 relative overflow-hidden">
             <BackgroundShapes />
             <DecorativeShapes />
             <div className="container mx-auto px-4 relative z-10">
@@ -666,7 +666,7 @@ export default function Homepage() {
             </div>
           </section>
 
-          <section id="contact" className="bg-gradient-to-br from-pink-100 to-white py-16 relative">
+          <section id="contact" className="bg-gradient-to-br from-pink-100 to-white py-16 relative overflow-hidden">
             <BackgroundShapes />
             <DecorativeShapes />
             <div className="container mx-auto px-4 text-center relative z-10">
