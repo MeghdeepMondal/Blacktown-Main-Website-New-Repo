@@ -299,7 +299,7 @@ export default function Homepage() {
       <Layout>
 
         <main>
-          <section className="relative h-[600px] overflow-hidden">
+          <section className="relative h-[420px] sm:h-[600px] overflow-hidden">
             <HeartSVG />
             <CrossSVG />
             <DoveSVG />
@@ -325,13 +325,13 @@ export default function Homepage() {
                 transition={{ duration: 1 }}
               >
                 <motion.h1 
-                  className="text-4xl font-bold mb-4"
+                  className="text-2xl sm:text-4xl font-bold mb-4"
                   animate={{ scale: [1, 1.02, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   &quot;I will give them one heart and one purpose&quot; Jer 32:39
                 </motion.h1>
-                <p className="text-xl mb-8 max-w-3xl mx-auto">
+                <p className="text-base sm:text-xl mb-8 max-w-3xl mx-auto">
                   We&apos;re passionate about our city and making it a better place for
                   all who live, work, and travel here – especially those who are
                   in need of a hand.
@@ -340,7 +340,7 @@ export default function Homepage() {
             </div>
             <div className="absolute bottom-0 left-0 w-full overflow-hidden">
               <svg 
-                className="relative block w-full h-[180px]" 
+                className="relative block w-full h-[100px] sm:h-[180px]" 
                 viewBox="0 0 1200 120" 
                 preserveAspectRatio="none" 
                 xmlns="http://www.w3.org/2000/svg"
@@ -414,10 +414,9 @@ export default function Homepage() {
                 About One Heart Blacktown
               </h2>
               
-              <div className="flex justify-center mb-12">
+              <div className="relative w-full max-w-5xl mx-auto aspect-video rounded-lg overflow-hidden shadow-lg mb-12">
                 <iframe 
-                  width="1200" 
-                  height="675" 
+                  className="absolute inset-0 w-full h-full"
                   src="https://www.youtube.com/embed/ZUIWA4oRgoc?si=QafVeUtQ-LF5YobU" 
                   title="YouTube video player" 
                   frameBorder="0" 
