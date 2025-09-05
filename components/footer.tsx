@@ -22,13 +22,7 @@ const Footer: React.FC = () => {
           {/* Copyright and Address */}
           <div className="text-center">
             <p className="mb-2">&copy; 2024 One Heart Blacktown. All rights reserved.</p>
-            <div className="flex items-center justify-center">
-              <MapPin className="mr-2 h-4 w-4" />
-              <span className="text-sm">
-                Wotso, Westpoint Shopping Centre, Level 4, Shop 4023/17 Patrick St, 
-                Blacktown NSW 2148, Australia.
-              </span>
-            </div>
+            
           </div>
         </div>
       </div>
