@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
+    const strapiUrl = process.env.STRAPI_URL || 'http://127.0.0.1:1337'
     const response = await axios.get(`${strapiUrl}/api/blog-posts`, {
       params: {
         'filters[Slug][$eq]': slug,
