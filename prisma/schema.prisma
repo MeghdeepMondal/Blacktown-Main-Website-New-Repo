@@ -10,32 +10,36 @@ datasource db {
 model adminrequests {
   id             String   @id @default(auto()) @map("_id") @db.ObjectId
   address        String
+  bannerPhoto    String?  // Cloudinary URL for banner/cover photo
   contactDetails String
   createdAt      DateTime @db.Date
   description    String
   email          String   @unique
   lat            Float
   lng            Float
-  logo           Bytes?
+  logo           String?  // Cloudinary URL for profile photo
   name           String
   password       String
   status         String
   updatedAt      DateTime @db.Date
+  websiteLink    String?  // Organization website URL
 }
 
 model admins {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   address        String?
+  bannerPhoto    String?   // Cloudinary URL for banner/cover photo
   contactDetails String?
   createdAt      DateTime? @db.Date
   description    String?
   email          String    @unique
   lat            Float?
   lng            Float?
-  logo           Bytes?
+  logo           String?   // Cloudinary URL for profile photo
   name           String
   password       String
   updatedAt      DateTime? @db.Date
+  websiteLink    String?   // Organization website URL
   events         events[]
 }
 
