@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import {
-  Calendar, Trash2, MapPin, LogOut, Edit,
-  Globe, Phone, Mail, User, Building2, ExternalLink
+  Calendar, Trash2, MapPin, LogOut, Edit, Camera,
+  Globe, Phone, Mail, User, Building2, ExternalLink, Loader2
 } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
 import RichTextEditor from '@/components/rich-text-editor'
@@ -66,9 +66,30 @@ const AdminDashboard: React.FC = () => {
   const [emailError, setEmailError] = useState('')
   const [eventPhoto, setEventPhoto] = useState<File | null>(null)
   const [activeTab, setActiveTab] = useState<'profile' | 'events'>('profile')
+  const [photoUploading, setPhotoUploading] = useState<'logo' | 'banner' | null>(null)
+  const [photoError, setPhotoError] = useState('')
 
   const profileInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
+
+  const uploadPhoto = async (file: File, type: 'logo' | 'bannerPhoto') => {
+    if (!id) return
+    setPhotoUploading(type === 'logo' ? 'logo' : 'banner')
+    setPhotoError('')
+    const fd = new FormData()
+    fd.append(type, file)
+    try {
+      const res = await fetch(`/api/admin/${id}/photos`, { method: 'POST', body: fd })
+      if (!res.ok) throw new Error((await res.json()).message || 'Upload failed')
+      const updated = await res.json()
+      setAdminData(updated)
+      setEditedAdminData(updated)
+    } catch (err) {
+      setPhotoError(err instanceof Error ? err.message : 'Photo upload failed')
+    } finally {
+      setPhotoUploading(null)
+    }
+  }
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -267,36 +288,93 @@ const AdminDashboard: React.FC = () => {
         </div>
       </header>
 
+
       {/* ── Hero Banner + Profile ── */}
       <div className="relative">
-        {/* Banner */}
+
+        {/* ── Banner ── */}
         <div className="relative h-56 md:h-72 bg-gradient-to-r from-pink-400 via-rose-400 to-pink-500 overflow-hidden">
           {adminData.bannerPhoto ? (
             <Image src={adminData.bannerPhoto} alt="Organisation banner" fill className="object-cover" />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center opacity-20">
-              {/* placeholder image icon */}
               <svg xmlns="http://www.w3.org/2000/svg" className="w-24 h-24 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
           )}
-          {/* Gradient overlay for legibility */}
+          {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+          {/* Banner upload overlay — centered, always visible on hover */}
+          <label
+            className="absolute inset-0 flex flex-col items-center justify-center opacity-0 hover:opacity-100 bg-black/40 backdrop-blur-sm transition-opacity duration-200 cursor-pointer z-10"
+          >
+            <div className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/20 text-white font-semibold shadow-lg backdrop-blur-md border border-white/30 hover:bg-white/30 transition-colors">
+              {photoUploading === 'banner' ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Camera className="w-5 h-5" />
+              )}
+              {photoUploading === 'banner' ? 'Uploading…' : 'Change Banner'}
+            </div>
+            {/* Native file input inside label */}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={photoUploading !== null}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) uploadPhoto(file, 'bannerPhoto')
+                e.target.value = ''
+              }}
+            />
+          </label>
         </div>
 
-        {/* Profile photo overlapping the banner */}
+        {/* ── Profile photo overlapping the banner ── */}
         <div className="container mx-auto px-6">
           <div className="relative -mt-16 flex items-end gap-6 pb-4">
-            <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-xl bg-pink-100 overflow-hidden flex-shrink-0">
-              {adminData.logo ? (
-                <Image src={adminData.logo} alt={adminData.name} fill className="object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <User className="w-14 h-14 text-pink-300" />
-                </div>
-              )}
+
+            {/* Profile photo circle with camera overlay */}
+            <div className="relative flex-shrink-0 group/avatar">
+              <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-xl bg-pink-100 overflow-hidden">
+                {adminData.logo ? (
+                  <Image src={adminData.logo} alt={adminData.name} fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <User className="w-14 h-14 text-pink-300" />
+                  </div>
+                )}
+              </div>
+
+              {/* Camera overlay label */}
+              <label
+                className={`absolute inset-0 rounded-full flex items-center justify-center bg-black/40 transition-opacity duration-200 cursor-pointer ${
+                  photoUploading === 'logo' ? 'opacity-100' : 'opacity-0 hover:opacity-100'
+                }`}
+              >
+                {photoUploading === 'logo' ? (
+                  <Loader2 className="w-8 h-8 text-white animate-spin" />
+                ) : (
+                  <Camera className="w-8 h-8 text-white" />
+                )}
+                {/* Native file input inside label */}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={photoUploading !== null}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) uploadPhoto(file, 'logo')
+                    e.target.value = ''
+                  }}
+                />
+              </label>
             </div>
+
             <div className="mb-2">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{adminData.name}</h1>
               {adminData.websiteLink && (
@@ -319,11 +397,12 @@ const AdminDashboard: React.FC = () => {
       {/* ── Main content ── */}
       <div className="container mx-auto px-6 pb-16 mt-2">
 
-        {error && (
+        {(error || photoError) && (
           <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-700 text-sm">
-            {error}
+            {error || photoError}
           </div>
         )}
+
 
         {/* ── Tab Bar ── */}
         <div className="flex gap-1 bg-white rounded-xl shadow-sm border border-gray-200 p-1 mb-8 w-fit">
