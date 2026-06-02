@@ -13,7 +13,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const admin = await prisma.admins.findUnique({
-        where: { id: id },
+        where: { id },
         select: {
           id: true,
           name: true,
@@ -22,6 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           address: true,
           contactDetails: true,
           logo: true,
+          bannerPhoto: true,
+          websiteLink: true,
           lat: true,
           lng: true,
         },
@@ -43,13 +45,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (req.method === 'PUT') {
     try {
-      const { name, email, description, address, contactDetails } = req.body;
+      const { name, email, description, address, contactDetails, websiteLink } = req.body;
 
-      // Check if email already exists
-      const existingAdmin = await prisma.admins.findUnique({
-        where: { email },
-      });
-
+      // Check if email is already taken by a different admin
+      const existingAdmin = await prisma.admins.findUnique({ where: { email } });
       if (existingAdmin && existingAdmin.id !== id) {
         return res.status(400).json({ message: 'Email already in use by another admin' });
       }
@@ -62,6 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           description,
           address,
           contactDetails,
+          websiteLink: websiteLink || null,
           updatedAt: new Date(),
         },
       });

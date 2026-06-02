@@ -32,6 +32,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             address: adminRequest.address,
             contactDetails: adminRequest.contactDetails,
             logo: adminRequest.logo,
+            bannerPhoto: adminRequest.bannerPhoto,
+            websiteLink: adminRequest.websiteLink,
             lat: adminRequest.lat,
             lng: adminRequest.lng,
           }
