@@ -272,7 +272,7 @@ const AdminDashboard: React.FC = () => {
           </div>
           <nav>
             <ul className="flex items-center space-x-5 text-sm font-medium">
-              {[['/', 'Home'], ['/opportunities', 'Opportunities'], ['/blog', 'Blog'], ['/events', 'Events'], ['/about', 'About'], ['/contact', 'Contact']].map(([href, label]) => (
+              {[['/', 'Home'], ['/members', 'Members'], ['/blog', 'Blog'], ['/opportunities', 'Opportunities'], ['/events', 'Events'], ['/about', 'About'], ['/contact', 'Contact']].map(([href, label]) => (
                 <li key={href}>
                   <Link href={href} className="text-white hover:text-pink-400 transition-colors duration-200">{label}</Link>
                 </li>
@@ -351,9 +351,8 @@ const AdminDashboard: React.FC = () => {
 
               {/* Camera overlay label */}
               <label
-                className={`absolute inset-0 rounded-full flex items-center justify-center bg-black/40 transition-opacity duration-200 cursor-pointer ${
-                  photoUploading === 'logo' ? 'opacity-100' : 'opacity-0 hover:opacity-100'
-                }`}
+                className={`absolute inset-0 rounded-full flex items-center justify-center bg-black/40 transition-opacity duration-200 cursor-pointer ${photoUploading === 'logo' ? 'opacity-100' : 'opacity-0 hover:opacity-100'
+                  }`}
               >
                 {photoUploading === 'logo' ? (
                   <Loader2 className="w-8 h-8 text-white animate-spin" />
@@ -410,11 +409,10 @@ const AdminDashboard: React.FC = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-lg text-sm font-medium capitalize transition-all duration-200 ${
-                activeTab === tab
-                  ? 'bg-pink-500 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-pink-600 hover:bg-pink-50'
-              }`}
+              className={`px-6 py-2 rounded-lg text-sm font-medium capitalize transition-all duration-200 ${activeTab === tab
+                ? 'bg-pink-500 text-white shadow-sm'
+                : 'text-gray-500 hover:text-pink-600 hover:bg-pink-50'
+                }`}
             >
               {tab === 'profile' ? 'Organisation Profile' : `Events (${events.length})`}
             </button>
