@@ -22,6 +22,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       if (action === 'approve') {
+        // Guard: check if an admin with this email already exists
+        const existingAdmin = await prisma.admins.findUnique({
+          where: { email: adminRequest.email }
+        })
+
+        if (existingAdmin) {
+          // The admin already exists — clean up the stale request and return a clear error
+          await prisma.adminrequests.delete({ where: { id: String(id) } })
+          return res.status(409).json({
+            message: `An admin account with email "${adminRequest.email}" already exists. The duplicate request has been removed.`
+          })
+        }
+
         // Create a new admin entry
         await prisma.admins.create({
           data: {
@@ -39,12 +52,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         })
 
-        // Delete the admin request
+        // Delete the admin request now that it's been processed
         await prisma.adminrequests.delete({
           where: { id: String(id) }
         })
 
         res.status(200).json({ message: 'Admin request approved and admin created successfully' })
+
       } else {
         // If rejecting, just delete the admin request
         await prisma.adminrequests.delete({
