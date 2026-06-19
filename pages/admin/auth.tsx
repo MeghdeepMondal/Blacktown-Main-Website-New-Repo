@@ -64,6 +64,13 @@ const AdminAuth: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  // ── Signup email verification state ──
+  const [emailVerified, setEmailVerified] = useState(false)
+  const [evOtp, setEvOtp] = useState('')
+  const [evError, setEvError] = useState('')
+  const [evSubmitting, setEvSubmitting] = useState(false)
+  const [evOtpSent, setEvOtpSent] = useState(false)
+
   // ── Forgot Password handlers ──
   const resetForgotFlow = () => {
     setIsForgotPassword(false)
@@ -151,6 +158,57 @@ const AdminAuth: React.FC = () => {
     }
   }
 
+  // ── Signup email verification handlers ──
+  const handleSendVerificationOtp = async () => {
+    if (!formData.email) { setEvError('Please enter your email address first.'); return }
+    if (!isValidEmailDomain(formData.email)) { setEvError('Please use a valid email domain (e.g. gmail.com).'); return }
+    setEvError('')
+    setEvSubmitting(true)
+    try {
+      const res = await fetch('/api/admin/send-verification-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setEvOtpSent(true)
+      } else {
+        setEvError(data.message || 'Failed to send OTP. Please try again.')
+      }
+    } catch {
+      setEvError('Network error. Please try again.')
+    } finally {
+      setEvSubmitting(false)
+    }
+  }
+
+  const handleVerifySignupOtp = async () => {
+    if (!evOtp) { setEvError('Please enter the OTP.'); return }
+    setEvError('')
+    setEvSubmitting(true)
+    try {
+      const res = await fetch('/api/admin/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, otp: evOtp }),
+      })
+      const data = await res.json()
+      if (res.ok && data.verified) {
+        setEmailVerified(true)
+        setEvOtpSent(false)
+        setEvOtp('')
+        setEvError('')
+      } else {
+        setEvError(data.message || 'Incorrect OTP. Please try again.')
+      }
+    } catch {
+      setEvError('Network error. Please try again.')
+    } finally {
+      setEvSubmitting(false)
+    }
+  }
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
@@ -206,6 +264,11 @@ const AdminAuth: React.FC = () => {
     }
 
     // ── SIGNUP: multipart FormData to /api/admin/signup ──
+    if (!emailVerified) {
+      setErrorMessage('Please verify your email address before signing up.')
+      return
+    }
+
     if (!isValidEmailDomain(formData.email)) {
       setEmailError('Please use a valid email domain.')
       return
@@ -232,6 +295,11 @@ const AdminAuth: React.FC = () => {
       if (response.ok) {
         alert(data.message)
         setIsLogin(true)
+        // Reset verification state for next use
+        setEmailVerified(false)
+        setEvOtp('')
+        setEvOtpSent(false)
+        setEvError('')
       } else {
         setErrorMessage(data.message || 'Signup failed')
       }
@@ -465,22 +533,96 @@ const AdminAuth: React.FC = () => {
                   {/* ── Email ── */}
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-pink-800">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Email"
-                      name="email"
-                      value={formData.email}
-                      onChange={(e) => { handleInputChange(e); setEmailError('') }}
-                      onBlur={(e) => {
-                        if (!isLogin && e.target.value && !isValidEmailDomain(e.target.value)) {
-                          setEmailError('Please use a valid email domain.')
-                        }
-                      }}
-                      required
-                      className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="Email"
+                        name="email"
+                        value={formData.email}
+                        onChange={(e) => {
+                          handleInputChange(e)
+                          setEmailError('')
+                          // Reset verification if email changes
+                          if (emailVerified || evOtpSent) {
+                            setEmailVerified(false)
+                            setEvOtpSent(false)
+                            setEvOtp('')
+                            setEvError('')
+                          }
+                        }}
+                        onBlur={(e) => {
+                          if (!isLogin && e.target.value && !isValidEmailDomain(e.target.value)) {
+                            setEmailError('Please use a valid email domain.')
+                          }
+                        }}
+                        required
+                        disabled={emailVerified}
+                        className={`border-pink-200 focus:border-pink-400 focus:ring-pink-400 flex-1 ${
+                          emailVerified ? 'bg-green-50 border-green-300 text-green-800' : ''
+                        }`}
+                      />
+                      {/* Only show verify button on signup tab */}
+                      {!isLogin && !emailVerified && (
+                        <Button
+                          type="button"
+                          onClick={handleSendVerificationOtp}
+                          disabled={evSubmitting || evOtpSent || !formData.email}
+                          className="shrink-0 bg-pink-500 hover:bg-pink-600 text-white text-sm px-3"
+                        >
+                          {evSubmitting && !evOtpSent ? 'Sending…' : evOtpSent ? 'Sent ✓' : 'Verify Email'}
+                        </Button>
+                      )}
+                      {!isLogin && emailVerified && (
+                        <span className="shrink-0 flex items-center gap-1 text-green-600 font-medium text-sm px-2">
+                          <CheckCircle className="h-4 w-4" /> Verified
+                        </span>
+                      )}
+                    </div>
                     {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+
+                    {/* ── Inline OTP input for signup email verification ── */}
+                    {!isLogin && evOtpSent && !emailVerified && (
+                      <div className="mt-2 p-3 bg-pink-50 border border-pink-200 rounded-lg space-y-2">
+                        <p className="text-xs text-gray-600">
+                          A 6-digit OTP was sent to <strong className="text-pink-700">{formData.email}</strong>. Enter it below to verify.
+                        </p>
+                        <div className="flex gap-2">
+                          <Input
+                            id="ev-otp"
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            placeholder="123456"
+                            value={evOtp}
+                            onChange={(e) => { setEvOtp(e.target.value.replace(/\D/g, '')); setEvError('') }}
+                            className="tracking-[0.4em] text-center font-mono border-pink-200 focus:border-pink-400"
+                            disabled={evSubmitting}
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleVerifySignupOtp}
+                            disabled={evSubmitting || evOtp.length !== 6}
+                            className="shrink-0 bg-pink-500 hover:bg-pink-600 text-white text-sm"
+                          >
+                            {evSubmitting ? 'Verifying…' : 'Confirm'}
+                          </Button>
+                        </div>
+                        {evError && (
+                          <p className="text-red-500 text-xs flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />{evError}
+                          </p>
+                        )}
+                        <button
+                          type="button"
+                          className="text-xs text-pink-500 hover:text-pink-700 underline"
+                          onClick={() => { setEvOtp(''); setEvError(''); setEvOtpSent(false); handleSendVerificationOtp() }}
+                          disabled={evSubmitting}
+                        >
+                          Resend OTP
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* ── Password ── */}
@@ -660,9 +802,9 @@ const AdminAuth: React.FC = () => {
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-md hover:shadow-lg"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || (!isLogin && !emailVerified)}
                   >
-                    {isSubmitting ? 'Processing...' : isLogin ? 'Login' : 'Signup'}
+                    {isSubmitting ? 'Processing...' : isLogin ? 'Login' : !emailVerified ? 'Verify Email to Sign Up' : 'Signup'}
                   </Button>
                 </form>
 
@@ -687,6 +829,11 @@ const AdminAuth: React.FC = () => {
                       setIsLogin(!isLogin)
                       setErrorMessage('')
                       setEmailError('')
+                      // Reset email verification when switching tabs
+                      setEmailVerified(false)
+                      setEvOtpSent(false)
+                      setEvOtp('')
+                      setEvError('')
                     }}
                     className="text-pink-600 hover:text-pink-700"
                     disabled={isSubmitting}
