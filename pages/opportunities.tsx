@@ -148,14 +148,40 @@ export default function OpportunitiesPage() {
   }
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">
-      <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-pink-500"></div>
-    </div>
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
+        <Header />
+        <main className="flex-grow flex justify-center items-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-pink-500"></div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   if (error) {
-    return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-pink-600 mb-4">Volunteer Opportunities</h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Join us in making a difference in the Blacktown community. Find volunteer opportunities
+              with local churches and organizations.
+            </p>
+          </div>
+          <div className="text-center py-16 bg-white rounded-lg shadow">
+            <Users className="h-16 w-16 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No opportunities available currently</h3>
+            <p className="text-gray-400">Please check back later — new opportunities are added regularly.</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
   }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-pink-100">
