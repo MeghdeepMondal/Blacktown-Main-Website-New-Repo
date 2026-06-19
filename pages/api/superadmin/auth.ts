@@ -22,7 +22,7 @@ export default async function handler(
       return res.status(400).json({ message: 'Email and password are required' })
     }
 
-    const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL
+    const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL || 'oneheartblacktown@gmail.com'
     if (!SUPERADMIN_EMAIL) {
       console.error('SUPERADMIN_EMAIL not set in environment.')
       return res.status(500).json({ message: 'Server configuration error' })

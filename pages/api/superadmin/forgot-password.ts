@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const email = process.env.SUPERADMIN_EMAIL
+    const email = process.env.SUPERADMIN_EMAIL || 'oneheartblacktown@gmail.com'
     if (!email) {
       console.error('SUPERADMIN_EMAIL not set in environment.')
       return res.status(500).json({ message: 'Server configuration error' })

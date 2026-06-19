@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ message: 'Email and OTP are required' })
   }
 
-  const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL
+  const SUPERADMIN_EMAIL = process.env.SUPERADMIN_EMAIL || 'oneheartblacktown@gmail.com'
   if (username !== SUPERADMIN_EMAIL) {
     return res.status(400).json({ message: 'Invalid email' })
   }
