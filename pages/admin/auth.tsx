@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { AlertCircle, Upload, Globe, Image as ImageIcon, Mail, KeyRound, Lock, CheckCircle, ArrowLeft } from 'lucide-react'
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+
 import Header from '@/components/header'
 import Footer from '@/components/footer'
 
@@ -19,8 +19,7 @@ const isValidEmailDomain = (email: string): boolean => {
   return validEmailDomains.includes(domain)
 }
 
-const containerStyle = { width: '100%', height: '400px' }
-const center = { lat: -33.7688, lng: 150.9051 }
+
 
 // ── Forgot Password Step type ──
 type ForgotStep = 'email' | 'otp' | 'reset' | 'done'
@@ -49,8 +48,6 @@ const AdminAuth: React.FC = () => {
     address: '',
     contactDetails: '',
     websiteLink: '',
-    lat: center.lat,
-    lng: center.lng,
   })
 
   // File states
@@ -62,7 +59,7 @@ const AdminAuth: React.FC = () => {
   const profileInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
 
-  const [markerPosition, setMarkerPosition] = useState(center)
+
   const [emailError, setEmailError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -154,24 +151,10 @@ const AdminAuth: React.FC = () => {
     }
   }
 
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-  })
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
     if (errorMessage) setErrorMessage('')
-  }
-
-  const handleMapClick = (e: google.maps.MapMouseEvent) => {
-    if (e.latLng) {
-      const lat = e.latLng.lat()
-      const lng = e.latLng.lng()
-      setMarkerPosition({ lat, lng })
-      setFormData(prev => ({ ...prev, lat, lng }))
-    }
   }
 
   const handleFileChange = (
@@ -237,8 +220,6 @@ const AdminAuth: React.FC = () => {
     fd.append('address', formData.address)
     fd.append('contactDetails', formData.contactDetails)
     fd.append('websiteLink', formData.websiteLink)
-    fd.append('lat', String(formData.lat))
-    fd.append('lng', String(formData.lng))
     if (profilePhoto) fd.append('logo', profilePhoto)
     if (bannerPhoto) fd.append('bannerPhoto', bannerPhoto)
 
@@ -264,7 +245,7 @@ const AdminAuth: React.FC = () => {
   // ── Forgot Password step labels for progress indicator ──
   const fpSteps: { key: ForgotStep; label: string; icon: React.ReactNode }[] = [
     { key: 'email', label: 'Email', icon: <Mail className="h-4 w-4" /> },
-    { key: 'otp',   label: 'Verify OTP', icon: <KeyRound className="h-4 w-4" /> },
+    { key: 'otp', label: 'Verify OTP', icon: <KeyRound className="h-4 w-4" /> },
     { key: 'reset', label: 'New Password', icon: <Lock className="h-4 w-4" /> },
   ]
   const fpStepIndex = forgotStep === 'done' ? 3 : fpSteps.findIndex(s => s.key === forgotStep)
@@ -304,13 +285,12 @@ const AdminAuth: React.FC = () => {
                   <div className="flex items-center gap-2">
                     {fpSteps.map((s, i) => (
                       <React.Fragment key={s.key}>
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                          i < fpStepIndex
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${i < fpStepIndex
                             ? 'bg-pink-500 text-white'
                             : i === fpStepIndex
-                            ? 'bg-pink-200 text-pink-800 ring-2 ring-pink-400'
-                            : 'bg-gray-100 text-gray-400'
-                        }`}>
+                              ? 'bg-pink-200 text-pink-800 ring-2 ring-pink-400'
+                              : 'bg-gray-100 text-gray-400'
+                          }`}>
                           {s.icon}
                           {s.label}
                         </div>
@@ -473,261 +453,248 @@ const AdminAuth: React.FC = () => {
                 LOGIN / SIGNUP FORM (hidden when forgot pw)
             ══════════════════════════════════════════════ */}
             {!isForgotPassword && (
-            <>
-            {errorMessage && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-700 flex items-start">
-                <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+              <>
+                {errorMessage && (
+                  <div className="mb-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-700 flex items-start">
+                    <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+                    <span>{errorMessage}</span>
+                  </div>
+                )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* ── Email ── */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-pink-800">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) => { handleInputChange(e); setEmailError('') }}
-                  onBlur={(e) => {
-                    if (!isLogin && e.target.value && !isValidEmailDomain(e.target.value)) {
-                      setEmailError('Please use a valid email domain.')
-                    }
-                  }}
-                  required
-                  className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                />
-                {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
-              </div>
-
-              {/* ── Password ── */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-pink-800">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  required
-                  className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                />
-              </div>
-
-              {/* ── Signup-only fields ── */}
-              {!isLogin && (
-                <>
-                  {/* Name */}
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* ── Email ── */}
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-pink-800">Name</Label>
+                    <Label htmlFor="email" className="text-pink-800">Email</Label>
                     <Input
-                      id="name"
-                      placeholder="Name"
-                      name="name"
-                      value={formData.name}
+                      id="email"
+                      type="email"
+                      placeholder="Email"
+                      name="email"
+                      value={formData.email}
+                      onChange={(e) => { handleInputChange(e); setEmailError('') }}
+                      onBlur={(e) => {
+                        if (!isLogin && e.target.value && !isValidEmailDomain(e.target.value)) {
+                          setEmailError('Please use a valid email domain.')
+                        }
+                      }}
+                      required
+                      className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                    />
+                    {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+                  </div>
+
+                  {/* ── Password ── */}
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-pink-800">Password</Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Password"
+                      name="password"
+                      value={formData.password}
                       onChange={handleInputChange}
                       required
                       className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
                     />
                   </div>
 
-                  {/* Description */}
-                  <div className="space-y-2">
-                    <Label htmlFor="description" className="text-pink-800">Description</Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Description"
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      required
-                      className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                    />
-                  </div>
-
-                  {/* ── Profile Photo ── */}
-                  <div className="space-y-2">
-                    <Label className="text-pink-800">Profile Photo</Label>
-                    <div className="flex items-center gap-4">
-                      {/* Circular preview */}
-                      <div
-                        onClick={() => profileInputRef.current?.click()}
-                        className="relative w-20 h-20 rounded-full border-2 border-dashed border-pink-300 bg-pink-50 flex items-center justify-center cursor-pointer overflow-hidden hover:border-pink-500 transition-colors flex-shrink-0"
-                      >
-                        {profilePreview ? (
-                          <Image
-                            src={profilePreview}
-                            alt="Profile preview"
-                            fill
-                            className="object-cover rounded-full"
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center text-pink-400">
-                            <Upload className="h-6 w-6" />
-                            <span className="text-xs mt-1">Photo</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        <p className="font-medium text-pink-800">Upload a profile photo</p>
-                        <p>JPG, PNG, WEBP up to 10 MB</p>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => profileInputRef.current?.click()}
-                          className="mt-1 border-pink-300 text-pink-700 hover:bg-pink-50"
-                        >
-                          Choose File
-                        </Button>
-                      </div>
-                    </div>
-                    <input
-                      ref={profileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, 'profile')}
-                    />
-                  </div>
-
-                  {/* ── Banner Photo ── */}
-                  <div className="space-y-2">
-                    <Label className="text-pink-800">Banner / Cover Photo</Label>
-                    <div
-                      onClick={() => bannerInputRef.current?.click()}
-                      className="relative w-full h-36 border-2 border-dashed border-pink-300 bg-pink-50 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden hover:border-pink-500 transition-colors"
-                    >
-                      {bannerPreview ? (
-                        <Image
-                          src={bannerPreview}
-                          alt="Banner preview"
-                          fill
-                          className="object-cover"
+                  {/* ── Signup-only fields ── */}
+                  {!isLogin && (
+                    <>
+                      {/* Name */}
+                      <div className="space-y-2">
+                        <Label htmlFor="name" className="text-pink-800">Name</Label>
+                        <Input
+                          id="name"
+                          placeholder="Name"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          required
+                          className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
                         />
-                      ) : (
-                        <div className="flex flex-col items-center text-pink-400">
-                          <ImageIcon className="h-8 w-8" />
-                          <span className="text-sm mt-2 font-medium">Click to upload banner photo</span>
-                          <span className="text-xs text-gray-400">Recommended: 1200 × 400 px</span>
-                        </div>
-                      )}
-                    </div>
-                    <input
-                      ref={bannerInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={(e) => handleFileChange(e, 'banner')}
-                    />
-                  </div>
+                      </div>
 
-                  {/* Map */}
-                  {isLoaded && (
-                    <div className="space-y-2">
-                      <Label className="text-pink-800">Location</Label>
-                      <GoogleMap
-                        mapContainerStyle={containerStyle}
-                        center={center}
-                        zoom={10}
-                        onClick={handleMapClick}
-                      >
-                        <Marker position={markerPosition} />
-                      </GoogleMap>
-                    </div>
+                      {/* Description */}
+                      <div className="space-y-2">
+                        <Label htmlFor="description" className="text-pink-800">Description</Label>
+                        <Textarea
+                          id="description"
+                          placeholder="Description"
+                          name="description"
+                          value={formData.description}
+                          onChange={handleInputChange}
+                          required
+                          className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                        />
+                      </div>
+
+                      {/* ── Profile Photo ── */}
+                      <div className="space-y-2">
+                        <Label className="text-pink-800">Profile Photo</Label>
+                        <div className="flex items-center gap-4">
+                          {/* Circular preview */}
+                          <div
+                            onClick={() => profileInputRef.current?.click()}
+                            className="relative w-20 h-20 rounded-full border-2 border-dashed border-pink-300 bg-pink-50 flex items-center justify-center cursor-pointer overflow-hidden hover:border-pink-500 transition-colors flex-shrink-0"
+                          >
+                            {profilePreview ? (
+                              <Image
+                                src={profilePreview}
+                                alt="Profile preview"
+                                fill
+                                className="object-cover rounded-full"
+                              />
+                            ) : (
+                              <div className="flex flex-col items-center text-pink-400">
+                                <Upload className="h-6 w-6" />
+                                <span className="text-xs mt-1">Photo</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            <p className="font-medium text-pink-800">Upload a profile photo</p>
+                            <p>JPG, PNG, WEBP up to 10 MB</p>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => profileInputRef.current?.click()}
+                              className="mt-1 border-pink-300 text-pink-700 hover:bg-pink-50"
+                            >
+                              Choose File
+                            </Button>
+                          </div>
+                        </div>
+                        <input
+                          ref={profileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, 'profile')}
+                        />
+                      </div>
+
+                      {/* ── Banner Photo ── */}
+                      <div className="space-y-2">
+                        <Label className="text-pink-800">Banner / Cover Photo</Label>
+                        <div
+                          onClick={() => bannerInputRef.current?.click()}
+                          className="relative w-full h-36 border-2 border-dashed border-pink-300 bg-pink-50 rounded-lg flex items-center justify-center cursor-pointer overflow-hidden hover:border-pink-500 transition-colors"
+                        >
+                          {bannerPreview ? (
+                            <Image
+                              src={bannerPreview}
+                              alt="Banner preview"
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="flex flex-col items-center text-pink-400">
+                              <ImageIcon className="h-8 w-8" />
+                              <span className="text-sm mt-2 font-medium">Click to upload banner photo</span>
+                              <span className="text-xs text-gray-400">Recommended: 1200 × 400 px</span>
+                            </div>
+                          )}
+                        </div>
+                        <input
+                          ref={bannerInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleFileChange(e, 'banner')}
+                        />
+                      </div>
+
+
+
+                      {/* Address */}
+                      <div className="space-y-2">
+                        <Label htmlFor="address" className="text-pink-800">Address</Label>
+                        <Input
+                          id="address"
+                          placeholder="Address"
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          required
+                          className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                        />
+                      </div>
+
+                      {/* Contact Details */}
+                      <div className="space-y-2">
+                        <Label htmlFor="contactDetails" className="text-pink-800">Contact Details</Label>
+                        <Input
+                          id="contactDetails"
+                          placeholder="Contact Details"
+                          name="contactDetails"
+                          value={formData.contactDetails}
+                          onChange={handleInputChange}
+                          required
+                          className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                        />
+                      </div>
+
+                      {/* Website Link */}
+                      <div className="space-y-2">
+                        <Label htmlFor="websiteLink" className="text-pink-800">
+                          <span className="flex items-center gap-1">
+                            <Globe className="h-4 w-4" />
+                            Organisation Website Link
+                          </span>
+                        </Label>
+                        <Input
+                          id="websiteLink"
+                          type="url"
+                          placeholder="https://www.yourorganisation.com"
+                          name="websiteLink"
+                          value={formData.websiteLink}
+                          onChange={handleInputChange}
+                          className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                        />
+                      </div>
+                    </>
                   )}
 
-                  {/* Address */}
-                  <div className="space-y-2">
-                    <Label htmlFor="address" className="text-pink-800">Address</Label>
-                    <Input
-                      id="address"
-                      placeholder="Address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                      className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                    />
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Processing...' : isLogin ? 'Login' : 'Signup'}
+                  </Button>
+                </form>
+
+                {/* Forgot Password link — only visible on login tab */}
+                {isLogin && (
+                  <div className="mt-2 text-center">
+                    <button
+                      type="button"
+                      onClick={() => { setIsForgotPassword(true); setErrorMessage(''); setFpError('') }}
+                      className="text-sm text-pink-500 hover:text-pink-700 underline transition-colors"
+                    >
+                      Forgot Password?
+                    </button>
                   </div>
+                )}
 
-                  {/* Contact Details */}
-                  <div className="space-y-2">
-                    <Label htmlFor="contactDetails" className="text-pink-800">Contact Details</Label>
-                    <Input
-                      id="contactDetails"
-                      placeholder="Contact Details"
-                      name="contactDetails"
-                      value={formData.contactDetails}
-                      onChange={handleInputChange}
-                      required
-                      className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                    />
-                  </div>
-
-                  {/* Website Link */}
-                  <div className="space-y-2">
-                    <Label htmlFor="websiteLink" className="text-pink-800">
-                      <span className="flex items-center gap-1">
-                        <Globe className="h-4 w-4" />
-                        Organisation Website Link
-                      </span>
-                    </Label>
-                    <Input
-                      id="websiteLink"
-                      type="url"
-                      placeholder="https://www.yourorganisation.com"
-                      name="websiteLink"
-                      value={formData.websiteLink}
-                      onChange={handleInputChange}
-                      className="border-pink-200 focus:border-pink-400 focus:ring-pink-400"
-                    />
-                  </div>
-                </>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all duration-300 shadow-md hover:shadow-lg"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Processing...' : isLogin ? 'Login' : 'Signup'}
-              </Button>
-            </form>
-
-            {/* Forgot Password link — only visible on login tab */}
-            {isLogin && (
-              <div className="mt-2 text-center">
-                <button
-                  type="button"
-                  onClick={() => { setIsForgotPassword(true); setErrorMessage(''); setFpError('') }}
-                  className="text-sm text-pink-500 hover:text-pink-700 underline transition-colors"
-                >
-                  Forgot Password?
-                </button>
-              </div>
-            )}
-
-            <p className="mt-4 text-center text-pink-800">
-              {isLogin ? "Don't have an account? " : 'Already have an account? '}
-              <Button
-                variant="link"
-                onClick={() => {
-                  setIsLogin(!isLogin)
-                  setErrorMessage('')
-                  setEmailError('')
-                }}
-                className="text-pink-600 hover:text-pink-700"
-                disabled={isSubmitting}
-              >
-                {isLogin ? 'Signup' : 'Login'}
-              </Button>
-            </p>
-            </>
+                <p className="mt-4 text-center text-pink-800">
+                  {isLogin ? "Don't have an account? " : 'Already have an account? '}
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      setIsLogin(!isLogin)
+                      setErrorMessage('')
+                      setEmailError('')
+                    }}
+                    className="text-pink-600 hover:text-pink-700"
+                    disabled={isSubmitting}
+                  >
+                    {isLogin ? 'Signup' : 'Login'}
+                  </Button>
+                </p>
+              </>
             )}
           </CardContent>
         </Card>
