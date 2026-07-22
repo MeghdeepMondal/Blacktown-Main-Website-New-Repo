@@ -28,6 +28,12 @@ const nextConfig = {
         port: '1337',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'strapicmsforohbblogs-production.up.railway.app',
+        port: '',
+        pathname: '/uploads/**',
+      },
     ],
   },
 }
