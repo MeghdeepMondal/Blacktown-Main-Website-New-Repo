@@ -338,10 +338,10 @@ const AdminDashboard: React.FC = () => {
 
         {/* ── Profile photo overlapping the banner ── */}
         <div className="container mx-auto px-6">
-          <div className="relative -mt-16 flex items-end gap-6 pb-4 z-20">
+          <div className="relative flex items-end gap-6 pb-4 z-20">
 
             {/* Profile photo circle with camera overlay */}
-            <div className="relative flex-shrink-0 group/avatar">
+            <div className="relative -mt-16 flex-shrink-0 group/avatar">
               <div className="relative w-32 h-32 rounded-full border-4 border-white shadow-xl bg-pink-100 overflow-hidden">
                 {adminData.logo ? (
                   <Image src={adminData.logo} alt={adminData.name} fill className="object-cover" />
@@ -377,8 +377,8 @@ const AdminDashboard: React.FC = () => {
               </label>
             </div>
 
-            <div className="mb-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{adminData.name}</h1>
+            <div className="mb-2 mt-4 sm:mt-0">
+              <h1 className="text-2xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1">{adminData.name}</h1>
               {adminData.websiteLink && (
                 <a
                   href={adminData.websiteLink}
@@ -524,10 +524,10 @@ const AdminDashboard: React.FC = () => {
           <div className="space-y-8">
 
             {/* ── Add / Edit Event Form ── */}
-            <Card className="shadow-md border border-gray-100 rounded-2xl overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800">
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
+            <Card className="shadow-xl shadow-pink-100/40 border border-pink-100 rounded-2xl overflow-hidden bg-gradient-to-br from-pink-50/60 via-white to-pink-50/30 transition-all duration-300">
+              <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100/80 border-b border-pink-200/60 text-pink-800">
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-pink-600" />
                   {isEditing ? 'Edit Event' : 'Add New Event'}
                 </CardTitle>
               </CardHeader>
@@ -536,18 +536,18 @@ const AdminDashboard: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="name" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Event Name</Label>
-                      <Input id="name" placeholder="Event Name" name="name" value={newEvent.name} onChange={handleInputChange} required className="border-pink-200 focus:ring-pink-400" />
+                      <Input id="name" placeholder="Event Name" name="name" value={newEvent.name} onChange={handleInputChange} required className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors" />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="date" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</Label>
-                      <Input id="date" type="date" name="date" value={newEvent.date} onChange={handleInputChange} required className="border-pink-200 focus:ring-pink-400" />
+                      <Input id="date" type="date" name="date" value={newEvent.date} onChange={handleInputChange} required className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors" />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="frequency" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Frequency</Label>
                       <select id="frequency" name="frequency" value={newEvent.frequency} onChange={handleInputChange} required
-                        className="w-full px-3 py-2 border border-pink-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white">
+                        className="w-full px-3 py-2 border border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-2 focus:ring-pink-500 rounded-md text-sm focus:outline-none bg-white transition-colors cursor-pointer">
                         <option value="">Select Frequency</option>
                         <option value="Once Off">Once Off</option>
                         <option value="Weekly">Weekly</option>
@@ -556,7 +556,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="location" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</Label>
-                      <Input id="location" placeholder="Location" name="location" value={newEvent.location} onChange={handleInputChange} required className="border-pink-200 focus:ring-pink-400" />
+                      <Input id="location" placeholder="Location" name="location" value={newEvent.location} onChange={handleInputChange} required className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors" />
                     </div>
                   </div>
                   <div className="space-y-1.5">
@@ -566,11 +566,11 @@ const AdminDashboard: React.FC = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="registrationLink" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Registration Link</Label>
-                      <Input id="registrationLink" placeholder="https://forms.gle/..." name="registrationLink" value={newEvent.registrationLink} onChange={handleInputChange} className="border-pink-200 focus:ring-pink-400" />
+                      <Input id="registrationLink" placeholder="https://forms.gle/..." name="registrationLink" value={newEvent.registrationLink} onChange={handleInputChange} className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors" />
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="photo" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Event Photo</Label>
-                      <Input id="photo" type="file" accept="image/*" onChange={(e) => { if (e.target.files?.[0]) setEventPhoto(e.target.files[0]) }} className="border-pink-200 focus:ring-pink-400 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-pink-100 file:text-pink-700" />
+                      <Input id="photo" type="file" accept="image/*" onChange={(e) => { if (e.target.files?.[0]) setEventPhoto(e.target.files[0]) }} className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-pink-100 file:text-pink-700 file:cursor-pointer file:hover:bg-pink-200" />
                     </div>
                   </div>
 
