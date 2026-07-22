@@ -98,12 +98,29 @@ const AdminDashboard: React.FC = () => {
   })
 
   useEffect(() => {
+    const token = localStorage.getItem('adminToken')
+    if (!token) {
+      router.replace('/admin/auth')
+      return
+    }
+
     const fetchAdminData = async () => {
       if (id) {
         setIsLoading(true)
         try {
-          const response = await fetch(`/api/admin/${id}`)
-          if (!response.ok) throw new Error('Failed to fetch admin data')
+          const response = await fetch(`/api/admin/${id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          })
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              localStorage.removeItem('adminToken')
+              router.replace('/admin/auth')
+              return
+            }
+            throw new Error('Failed to fetch admin data')
+          }
           const data = await response.json()
           setAdminData(data.admin)
           setEditedAdminData(data.admin)
@@ -117,7 +134,7 @@ const AdminDashboard: React.FC = () => {
       }
     }
     fetchAdminData()
-  }, [id])
+  }, [id, router])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -194,7 +211,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken')
-    router.push('/admin/auth')
+    router.replace('/admin/auth')
   }
 
   const handleEditEvent = (event: EventData) => {
