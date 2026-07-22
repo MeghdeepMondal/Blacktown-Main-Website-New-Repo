@@ -413,8 +413,8 @@ const EventsPage: React.FC = () => {
                 </div>
 
                 {isNearbyMode && (
-                  <div className="flex items-center gap-3 w-full sm:w-80 ml-0 sm:ml-4">
-                    <span className="text-sm font-medium text-pink-700 whitespace-nowrap min-w-[70px]">Radius: {radius[0]}km</span>
+                  <div className="flex items-center gap-4 w-full sm:w-80 ml-0 sm:ml-4">
+                    <span className="text-sm font-medium text-pink-700 whitespace-nowrap min-w-[110px] shrink-0">Radius: {radius[0]}km</span>
                     <Slider
                       defaultValue={[5]}
                       max={50}
