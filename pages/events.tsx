@@ -96,9 +96,21 @@ const EventsPage: React.FC = () => {
 
   const locateOnMap = (event: Event) => {
     if (map) {
-      map.panTo({ lat: event.lat, lng: event.lng })
-      map.setZoom(14)
-      setHoveredEvent(event)
+      const targetCoords = { lat: event.lat, lng: event.lng }
+      
+      // Step 1: Smoothly zoom out to prepare the viewport for a slide
+      map.setZoom(10)
+      
+      // Step 2: Pan to the target coordinates after the zoom starts settling
+      setTimeout(() => {
+        map.panTo(targetCoords)
+        
+        // Step 3: Zoom back in and open the details card once the pan completes
+        setTimeout(() => {
+          map.setZoom(14)
+          setHoveredEvent(event)
+        }, 600)
+      }, 250)
     }
   }
 
@@ -200,7 +212,7 @@ const EventsPage: React.FC = () => {
   const [sortBy, setSortBy] = useState('date')
   const [isNearbyMode, setIsNearbyMode] = useState(false)
   const [radius, setRadius] = useState([5]) // in kilometers
-  const [viewMode, setViewMode] = useState<'list' | 'map' | 'split'>('list')
+  const [viewMode, setViewMode] = useState<'list' | 'map' | 'split'>('split')
   const [organizations, setOrganizations] = useState<{ id: string; name: string }[]>([])
 
   const { isLoaded } = useJsApiLoader({
@@ -594,11 +606,11 @@ const EventsPage: React.FC = () => {
             
             <div className="flex bg-white rounded-lg border border-pink-100 p-1 shadow-sm shrink-0">
               <button 
-                onClick={() => setViewMode('list')}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${viewMode === 'list' ? 'bg-pink-500 text-white shadow-sm' : 'text-pink-600 hover:bg-pink-50'}`}
+                onClick={() => setViewMode('split')}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${viewMode === 'split' ? 'bg-pink-500 text-white shadow-sm' : 'text-pink-600 hover:bg-pink-50'}`}
               >
-                <ListIcon className="w-4 h-4" />
-                <span className="hidden sm:inline">List View</span>
+                <Compass className="w-4 h-4" />
+                <span className="hidden sm:inline">Split View</span>
               </button>
               <button 
                 onClick={() => setViewMode('map')}
@@ -608,11 +620,11 @@ const EventsPage: React.FC = () => {
                 <span className="hidden sm:inline">Map View</span>
               </button>
               <button 
-                onClick={() => setViewMode('split')}
-                className={`hidden lg:flex px-3 py-1.5 rounded-md text-sm font-medium transition-all items-center gap-1.5 ${viewMode === 'split' ? 'bg-pink-500 text-white shadow-sm' : 'text-pink-600 hover:bg-pink-50'}`}
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-1.5 ${viewMode === 'list' ? 'bg-pink-500 text-white shadow-sm' : 'text-pink-600 hover:bg-pink-50'}`}
               >
-                <Compass className="w-4 h-4" />
-                Split View
+                <ListIcon className="w-4 h-4" />
+                <span className="hidden sm:inline">List View</span>
               </button>
             </div>
           </div>
