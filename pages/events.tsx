@@ -52,6 +52,11 @@ const defaultCenter = {
   lng: 150.9051
 }
 
+const stripHtmlTags = (html: string) => {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, '')
+}
+
 const EventsPage: React.FC = () => {
   const router = useRouter()
   const [userLocation, setUserLocation] = useState(defaultCenter)
@@ -533,7 +538,7 @@ const EventsPage: React.FC = () => {
                       </CardHeader>
                       <CardContent className="p-5 flex flex-col flex-grow">
                         <h3 className="text-xl font-semibold mb-2 text-pink-900 line-clamp-1">{event.name}</h3>
-                        <p className="text-gray-600 mb-4 line-clamp-3 text-sm flex-grow">{event.description}</p>
+                        <p className="text-gray-600 mb-4 line-clamp-3 text-sm flex-grow">{stripHtmlTags(event.description)}</p>
                         
                         <div className="space-y-2 text-sm text-gray-500 mb-4">
                           <div className="flex items-center gap-2">

@@ -233,6 +233,11 @@ const DecorativeShapes = () => (
   </>
 );
 
+const stripHtmlTags = (html: string) => {
+  if (!html) return ''
+  return html.replace(/<[^>]*>/g, '')
+}
+
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
@@ -674,7 +679,7 @@ export default function Homepage() {
                     </CardHeader>
                     <CardContent className="p-4 flex-grow">
                       <h3 className="text-xl font-semibold mb-2">{event.name}</h3>
-                      <p className="text-gray-600 mb-4 line-clamp-3">{event.description}</p>
+                      <p className="text-gray-600 mb-4 line-clamp-3">{stripHtmlTags(event.description)}</p>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center">
                           <Calendar className="h-4 w-4 mr-1" />
