@@ -519,7 +519,7 @@ const EventsPage: React.FC = () => {
                   renderEmptyState()
                 ) : (
                   filteredEvents.map((event) => (
-                    <Card key={event.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col h-full overflow-hidden border border-pink-100/60">
+                    <Card key={event.id} className={`bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden border border-pink-100/60 ${viewMode === 'split' ? 'h-auto' : 'h-full'}`}>
                       <CardHeader className="p-0 relative flex-shrink-0">
                         <div className="relative h-48 w-full bg-pink-50">
                           <Image
