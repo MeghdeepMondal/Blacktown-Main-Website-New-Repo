@@ -384,7 +384,7 @@ const SuperAdminDashboard: React.FC = () => {
               onClick={() => setActiveSection('admins')}
             >
               <Users className="mr-2 h-4 w-4 shrink-0" />
-              <span className="truncate">Admin Users</span>
+              <span className="truncate">Manage Admins</span>
             </Button>
             <Button
               className={`flex-1 md:flex-none justify-start ${
