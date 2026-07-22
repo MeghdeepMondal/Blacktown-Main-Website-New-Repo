@@ -68,6 +68,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             opportunity: true,
             createdAt: true,
             updatedAt: true,
+            admin: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
           },
           skip,
           take: limitNumber,
