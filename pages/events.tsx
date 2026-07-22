@@ -94,6 +94,14 @@ const EventsPage: React.FC = () => {
     setHoveredEvent(event)
   }
 
+  const locateOnMap = (event: Event) => {
+    if (map) {
+      map.panTo({ lat: event.lat, lng: event.lng })
+      map.setZoom(14)
+      setHoveredEvent(event)
+    }
+  }
+
   // Clear timeout and InfoWindow on unmount
   useEffect(() => {
     return () => {
@@ -675,6 +683,16 @@ const EventsPage: React.FC = () => {
                         </div>
                         
                         <div className="mt-auto pt-4 flex flex-col gap-2 border-t border-gray-100">
+                          {viewMode === 'split' && (
+                            <Button
+                              variant="default"
+                              className="w-full bg-green-600 hover:bg-green-700 text-white hover:shadow-md active:scale-[0.98] transition-all flex items-center justify-center gap-1.5 border-0 font-semibold shadow-sm"
+                              onClick={() => locateOnMap(event)}
+                            >
+                              <MapPin className="w-3.5 h-3.5 text-white shrink-0" />
+                              Locate on Map
+                            </Button>
+                          )}
                           <Link href={`/events/${event.id}`} passHref className="w-full">
                             <Button
                               variant="default"
