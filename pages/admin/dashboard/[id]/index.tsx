@@ -335,7 +335,7 @@ const AdminDashboard: React.FC = () => {
 
         {/* ── Profile photo overlapping the banner ── */}
         <div className="container mx-auto px-6">
-          <div className="relative -mt-16 flex items-end gap-6 pb-4">
+          <div className="relative -mt-16 flex items-end gap-6 pb-4 z-20">
 
             {/* Profile photo circle with camera overlay */}
             <div className="relative flex-shrink-0 group/avatar">
