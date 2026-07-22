@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, CalendarIcon, AlertCircle, Globe, Camera, ExternalLink, Loader2 } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, CalendarIcon, AlertCircle, Globe, Camera, ExternalLink, Loader2, BookOpen } from 'lucide-react'
 import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
 import RichTextEditor from '@/components/rich-text-editor'
 import Footer from '@/components/footer'
@@ -395,6 +395,20 @@ const SuperAdminDashboard: React.FC = () => {
               <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
               <span className="truncate">Manage Events</span>
             </Button>
+            <a 
+              href="https://strapicmsforohbblogs-production.up.railway.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 md:flex-none"
+            >
+              <Button
+                className="w-full justify-start bg-gradient-to-r from-pink-400 to-pink-500 hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+              >
+                <BookOpen className="mr-2 h-4 w-4 shrink-0" />
+                <span className="truncate">Manage Blogs</span>
+                <ExternalLink className="ml-auto h-3 w-3 shrink-0 opacity-70" />
+              </Button>
+            </a>
           </div>
           <div className="pt-2 md:pt-4 border-t border-pink-200/30 flex md:block mt-2 md:mt-auto">
             <Button
