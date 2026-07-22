@@ -11,7 +11,7 @@ import {
   Calendar, Trash2, MapPin, LogOut, Edit, Camera,
   Globe, Phone, Mail, User, Building2, ExternalLink, Loader2
 } from 'lucide-react'
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
 import RichTextEditor from '@/components/rich-text-editor'
 
 const containerStyle = { width: '100%', height: '300px' }
@@ -58,6 +58,7 @@ const AdminDashboard: React.FC = () => {
   })
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null)
   const [markerPosition, setMarkerPosition] = useState(center)
+  const [mapCenter, setMapCenter] = useState(center)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isEditing, setIsEditing] = useState(false)
@@ -199,6 +200,7 @@ const AdminDashboard: React.FC = () => {
   const handleEditEvent = (event: EventData) => {
     setNewEvent(event)
     setMarkerPosition({ lat: event.lat, lng: event.lng })
+    setMapCenter({ lat: event.lat, lng: event.lng })
     setIsEditing(true)
     setActiveTab('events')
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -211,6 +213,7 @@ const AdminDashboard: React.FC = () => {
       registrationLink: '', hasOpportunity: false, opportunity: ''
     })
     setMarkerPosition(center)
+    setMapCenter(center)
     setIsEditing(false)
     setEventPhoto(null)
   }
@@ -588,14 +591,14 @@ const AdminDashboard: React.FC = () => {
                   {isLoaded && (
                     <div className="space-y-1.5">
                       <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Event Location (Click to set)</Label>
-                      <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10}
+                      <GoogleMap mapContainerStyle={containerStyle} center={mapCenter} zoom={10}
                         onClick={(e) => {
                           if (e.latLng) {
                             const lat = e.latLng.lat(); const lng = e.latLng.lng()
                             setMarkerPosition({ lat, lng }); setNewEvent(prev => ({ ...prev, lat, lng }))
                           }
                         }}>
-                        <Marker position={markerPosition} />
+                        <MarkerF position={markerPosition} />
                       </GoogleMap>
                     </div>
                   )}
