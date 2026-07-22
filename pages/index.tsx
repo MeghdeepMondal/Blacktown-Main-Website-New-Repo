@@ -9,7 +9,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut, ExternalLink, User } from 'lucide-react';
+import { Calendar, Users, Heart, MapPin, Briefcase, BookOpen, Info, Mail, LogOut, ExternalLink, User, Building2 } from 'lucide-react';
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { motion } from "framer-motion";
@@ -43,30 +43,15 @@ interface BlogPost {
   };
 }
 
-// Mock data for featured members
-const featuredMembers = [
-  {
-    id: 1,
-    name: "St. Patrick's Church",
-    logo: "/church1.jpg?height=100&width=100",
-    banner: "/cbanner5.jpg?height=200&width=800",
-    description: "St. Patrick's Church is a vibrant Catholic community dedicated to serving the spiritual needs of Blacktown residents since 1861."
-  },
-  {
-    id: 2,
-    name: "Blacktown Anglican Church",
-    logo: "/church2.jpg?height=100&width=100",
-    banner: "/cbanner6.jpg?height=200&width=800",
-    description: "Blacktown Anglican Church is committed to sharing God's love through worship, fellowship, and community outreach programs."
-  },
-  {
-    id: 3,
-    name: "Blacktown Uniting Church",
-    logo: "/church3.jpg?height=100&width=100",
-    banner: "/cbanner4.jpg?height=200&width=800",
-    description: "Blacktown Uniting Church is an inclusive community fostering faith, social justice, and compassion in the heart of Blacktown."
-  },
-];
+interface Member {
+  id: string;
+  name: string;
+  logo?: string | null;
+  bannerPhoto?: string | null;
+  address?: string | null;
+  websiteLink?: string | null;
+  description?: string | null;
+}
 
 // Add this CSS class to your global styles or as a styled component
 const floatingAnimation = {
@@ -250,8 +235,10 @@ const DecorativeShapes = () => (
 
 export default function Homepage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([])
+  const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [latestBlogPosts, setLatestBlogPosts] = useState<BlogPost[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -292,6 +279,25 @@ export default function Homepage() {
     };
 
     fetchLatestBlogPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await fetch('/api/members');
+        if (!response.ok) {
+          throw new Error('Failed to fetch members');
+        }
+        const data = await response.json();
+        setMembers(data.members || []);
+      } catch (error) {
+        console.error('Error fetching members:', error);
+      } finally {
+        setMembersLoading(false);
+      }
+    };
+
+    fetchMembers();
   }, []);
 
   return (
@@ -545,43 +551,93 @@ export default function Homepage() {
               <h2 className="text-3xl font-bold text-center mb-8 text-pink-800">
                 Our Members
               </h2>
-              <div className="grid md:grid-cols-3 gap-8">
-                {featuredMembers.map((member, index) => (
-                  <Card key={member.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div className="relative h-48 overflow-hidden">
-                      <Image
-                        src={member.banner}
-                        alt={`${member.name} banner`}
-                        fill
-                        className="object-cover rounded-t-lg"
-                      />
-                    </div>
-                    <CardContent className="relative p-6">
-                      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
-                        <div className="w-24 h-24 relative bg-white rounded-full shadow-md overflow-hidden border-4 border-white">
+              {membersLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  {[1, 2, 3].map((n) => (
+                    <Card key={n} className="bg-white shadow-lg animate-pulse overflow-hidden">
+                      <div className="h-48 bg-pink-100/50" />
+                      <CardContent className="relative p-6 mt-12">
+                        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-pink-50 rounded-full border-4 border-white" />
+                        <div className="h-6 bg-pink-100/50 rounded w-2/3 mx-auto mb-4" />
+                        <div className="h-4 bg-pink-100/30 rounded w-5/6 mx-auto mb-2" />
+                        <div className="h-4 bg-pink-100/30 rounded w-4/5 mx-auto mb-6" />
+                        <div className="h-10 bg-pink-200/50 rounded w-1/3 mx-auto" />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : members.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-pink-700 text-lg">No active members found.</p>
+                </div>
+              ) : (
+                <div className={
+                  members.length === 1 
+                    ? "grid grid-cols-1 max-w-md mx-auto" 
+                    : members.length === 2 
+                      ? "grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto" 
+                      : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                }>
+                  {members.map((member) => (
+                    <Card key={member.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full overflow-hidden">
+                      <div className="relative h-48 overflow-hidden bg-gradient-to-r from-pink-300 via-rose-300 to-pink-400 flex-shrink-0">
+                        {member.bannerPhoto ? (
                           <Image
-                            src={member.logo}
-                            alt={`${member.name} logo`}
+                            src={member.bannerPhoto}
+                            alt={`${member.name} banner`}
                             fill
-                            className="object-contain"
+                            className="object-cover rounded-t-lg"
                           />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <CardContent className="relative p-6 flex flex-col flex-grow">
+                        <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                          <div className="w-24 h-24 relative bg-white rounded-full shadow-md overflow-hidden border-4 border-white flex items-center justify-center">
+                            {member.logo ? (
+                              <Image
+                                src={member.logo}
+                                alt={`${member.name} logo`}
+                                fill
+                                className="object-contain bg-white"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-pink-50">
+                                <Building2 className="w-10 h-10 text-pink-300" />
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                      <h3 className="text-xl font-semibold text-center mt-12 mb-2 text-pink-800">{member.name}</h3>
-                      <p className="text-gray-600 text-center mb-4">{member.description}</p>
-                      <div className="text-center">
-                        <Button
-                          variant="default"
-                          className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300"
-                        >
-                          Learn More
-                          <ExternalLink className="w-4 h-4 ml-2" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                        <div className="mt-12 flex flex-col flex-grow">
+                          <h3 className="text-xl font-semibold text-center mb-2 text-pink-800">{member.name}</h3>
+                          <p className="text-gray-600 text-center mb-6 line-clamp-4 flex-grow">{member.description || 'No description available.'}</p>
+                          <div className="text-center mt-auto">
+                            <Button
+                              variant="default"
+                              className="bg-pink-500 hover:bg-pink-600 text-white transition-colors duration-300 w-full sm:w-auto"
+                              onClick={() => {
+                                if (member.websiteLink) {
+                                  window.open(member.websiteLink, '_blank');
+                                } else {
+                                  window.location.href = '/members';
+                                }
+                              }}
+                            >
+                              {member.websiteLink ? 'Visit Website' : 'Learn More'}
+                              <ExternalLink className="w-4 h-4 ml-2" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
               <div className="text-center mt-8">
                 <Link href="/members">
                   <Button
