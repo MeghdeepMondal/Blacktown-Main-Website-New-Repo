@@ -7,10 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, CalendarIcon, AlertCircle } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, Trash2, MapPin, LogOut, X, Edit, Users, CalendarIcon, AlertCircle, Globe, Camera, ExternalLink, Loader2 } from 'lucide-react'
+import { GoogleMap, useJsApiLoader, MarkerF } from '@react-google-maps/api'
+import RichTextEditor from '@/components/rich-text-editor'
 import Footer from '@/components/footer'
 import Header from '@/components/header'
+
+const containerStyle = { width: '100%', height: '300px' }
+const center = { lat: -33.7688, lng: 150.9051 }
 
 interface AdminRequest {
   id: string
@@ -40,6 +46,12 @@ interface Event {
   adminId: string
   adminName: string
   frequency: string
+  lat: number
+  lng: number
+  photo?: string
+  registrationLink?: string
+  hasOpportunity?: boolean
+  opportunity?: string
 }
 
 const SuperAdminDashboard: React.FC = () => {
@@ -49,6 +61,14 @@ const SuperAdminDashboard: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([])
   const [activeSection, setActiveSection] = useState<'admins' | 'events'>('admins')
   const [editingEvent, setEditingEvent] = useState<Event | null>(null)
+
+  const [markerPosition, setMarkerPosition] = useState(center)
+  const [mapCenter, setMapCenter] = useState(center)
+
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
+  })
   const [loading, setLoading] = useState({
     adminRequests: true,
     approvedAdmins: true,
@@ -239,6 +259,10 @@ const SuperAdminDashboard: React.FC = () => {
 
   const handleEditEvent = (event: Event) => {
     setEditingEvent(event)
+    const eventLat = event.lat || center.lat
+    const eventLng = event.lng || center.lng
+    setMarkerPosition({ lat: eventLat, lng: eventLng })
+    setMapCenter({ lat: eventLat, lng: eventLng })
   }
 
   const handleUpdateEvent = async (e: React.FormEvent) => {
@@ -346,97 +370,106 @@ const SuperAdminDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-100 via-white to-pink-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-pink-50 via-white to-pink-50">
       <Header />
-
-      <div className="flex-grow flex">
+      
+      <div className="flex-grow flex flex-col md:flex-row">
         {/* Side Pane */}
-        <div className="w-64 bg-pink-50 p-6 space-y-4">
-          <Button
-            className={`w-full justify-start ${
-              activeSection === 'admins' ? 'bg-pink-600' : 'bg-gradient-to-r from-pink-400 to-pink-500'
-            } hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg`}
-            onClick={() => setActiveSection('admins')}
-          >
-            <Users className="mr-2 h-4 w-4" />
-            Manage Admin Users
-          </Button>
-          <Button
-            className={`w-full justify-start ${
-              activeSection === 'events' ? 'bg-pink-600' : 'bg-gradient-to-r from-pink-400 to-pink-500'
-            } hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg`}
-            onClick={() => setActiveSection('events')}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            Manage Events
-          </Button>
-          <div className="pt-4 mt-auto">
+        <div className="w-full md:w-64 bg-pink-50/40 p-4 md:p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-pink-100/50 gap-4 shrink-0">
+          <div className="flex flex-row md:flex-col gap-2 md:gap-3 flex-wrap md:flex-nowrap">
+            <Button
+              className={`flex-1 md:flex-none justify-start ${
+                activeSection === 'admins' ? 'bg-pink-600' : 'bg-gradient-to-r from-pink-400 to-pink-500'
+              } hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg`}
+              onClick={() => setActiveSection('admins')}
+            >
+              <Users className="mr-2 h-4 w-4 shrink-0" />
+              <span className="truncate">Admin Users</span>
+            </Button>
+            <Button
+              className={`flex-1 md:flex-none justify-start ${
+                activeSection === 'events' ? 'bg-pink-600' : 'bg-gradient-to-r from-pink-400 to-pink-500'
+              } hover:from-pink-500 hover:to-pink-600 text-white transition-all duration-300 shadow-md hover:shadow-lg`}
+              onClick={() => setActiveSection('events')}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+              <span className="truncate">Manage Events</span>
+            </Button>
+          </div>
+          <div className="pt-2 md:pt-4 border-t border-pink-200/30 flex md:block mt-2 md:mt-auto">
             <Button
               variant="outline"
               className="w-full justify-start border-pink-400 text-pink-600 hover:bg-pink-100"
               onClick={handleLogout}
             >
-              <LogOut className="mr-2 h-4 w-4" />
+              <LogOut className="mr-2 h-4 w-4 shrink-0" />
               Logout
             </Button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-grow p-8">
-          <h1 className="text-4xl font-bold mb-8 text-pink-600">Super Admin Dashboard</h1>
+        <div className="flex-grow p-4 sm:p-6 md:p-8">
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-8 text-pink-900 tracking-tight text-center md:text-left">Super Admin Dashboard</h1>
 
           {activeSection === 'admins' && (
             <>
               {/* Admin Requests Section */}
-              <Card className="mb-8 bg-gradient-to-br from-white to-pink-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 rounded-lg overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800 rounded-t-lg">
-                  <CardTitle>Admin Signup Requests</CardTitle>
+              <Card className="mb-8 bg-gradient-to-br from-white to-pink-50/30 shadow-xl shadow-pink-100/40 hover:shadow-2xl transition-all duration-300 border border-pink-100/80 rounded-2xl overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100/80 border-b border-pink-200/60 text-pink-900 rounded-t-2xl px-6 py-4">
+                  <CardTitle className="text-lg font-bold flex items-center gap-2">
+                    <Users className="w-5 h-5 text-pink-600 shrink-0" />
+                    Admin Signup Requests
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   {error.adminRequests && renderErrorMessage(error.adminRequests)}
                   
                   {loading.adminRequests ? (
                     renderLoadingState()
                   ) : adminRequests.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Address</TableHead>
-                          <TableHead>Contact Details</TableHead>
-                          <TableHead>Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {adminRequests.map((request) => (
-                          <TableRow key={request.id}>
-                            <TableCell>{request.name}</TableCell>
-                            <TableCell>{request.email}</TableCell>
-                            <TableCell>{request.description}</TableCell>
-                            <TableCell>{request.address}</TableCell>
-                            <TableCell>{request.contactDetails}</TableCell>
-                            <TableCell>
-                              <Button
-                                onClick={() => handleRequestAction(request.id, 'approve')}
-                                className="mr-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                              >
-                                Approve
-                              </Button>
-                              <Button
-                                onClick={() => handleRequestAction(request.id, 'reject')}
-                                variant="destructive"
-                                className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                              >
-                                Reject
-                              </Button>
-                            </TableCell>
+                    <div className="overflow-x-auto w-full -mx-6 px-6 md:mx-0 md:px-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Address</TableHead>
+                            <TableHead>Contact Details</TableHead>
+                            <TableHead>Actions</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {adminRequests.map((request) => (
+                            <TableRow key={request.id} className="hover:bg-pink-50/20">
+                              <TableCell className="font-semibold text-gray-900 whitespace-nowrap">{request.name}</TableCell>
+                              <TableCell className="text-gray-600 font-mono text-xs">{request.email}</TableCell>
+                              <TableCell className="max-w-[220px] truncate text-gray-500 text-xs" title={request.description}>{request.description}</TableCell>
+                              <TableCell className="max-w-[180px] truncate text-gray-500 text-xs" title={request.address}>{request.address}</TableCell>
+                              <TableCell className="text-gray-600 text-xs whitespace-nowrap">{request.contactDetails}</TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    onClick={() => handleRequestAction(request.id, 'approve')}
+                                    className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-xs h-8 px-3 transition-all duration-300 shadow-sm"
+                                  >
+                                    Approve
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleRequestAction(request.id, 'reject')}
+                                    variant="destructive"
+                                    className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-xs h-8 px-3 transition-all duration-300 shadow-sm"
+                                  >
+                                    Reject
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   ) : (
                     <div className="p-4 text-center text-gray-500">
                       No pending admin requests found.
@@ -446,38 +479,43 @@ const SuperAdminDashboard: React.FC = () => {
               </Card>
 
               {/* Approved Admins Section */}
-              <Card className="mb-8 bg-gradient-to-br from-white to-pink-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 rounded-lg overflow-hidden">
-                <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800 rounded-t-lg">
-                  <CardTitle>Existing Admins</CardTitle>
+              <Card className="mb-8 bg-gradient-to-br from-white to-pink-50/30 shadow-xl shadow-pink-100/40 hover:shadow-2xl transition-all duration-300 border border-pink-100/80 rounded-2xl overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100/80 border-b border-pink-200/60 text-pink-900 rounded-t-2xl px-6 py-4">
+                  <CardTitle className="text-lg font-bold flex items-center gap-2">
+                    <Users className="w-5 h-5 text-pink-600 shrink-0" />
+                    Approved Admin List
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   {error.approvedAdmins && renderErrorMessage(error.approvedAdmins)}
                   
                   {loading.approvedAdmins ? (
                     renderLoadingState()
                   ) : approvedAdmins.length > 0 ? (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Email</TableHead>
-                          <TableHead>Description</TableHead>
-                          <TableHead>Address</TableHead>
-                          <TableHead>Contact Details</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {approvedAdmins.map((admin) => (
-                          <TableRow key={admin.id}>
-                            <TableCell>{admin.name}</TableCell>
-                            <TableCell>{admin.email}</TableCell>
-                            <TableCell>{admin.description}</TableCell>
-                            <TableCell>{admin.address}</TableCell>
-                            <TableCell>{admin.contactDetails}</TableCell>
+                    <div className="overflow-x-auto w-full -mx-6 px-6 md:mx-0 md:px-0">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Address</TableHead>
+                            <TableHead>Contact Details</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                        </TableHeader>
+                        <TableBody>
+                          {approvedAdmins.map((admin) => (
+                            <TableRow key={admin.id} className="hover:bg-pink-50/20">
+                              <TableCell className="font-semibold text-gray-900 whitespace-nowrap">{admin.name}</TableCell>
+                              <TableCell className="text-gray-600 font-mono text-xs">{admin.email}</TableCell>
+                              <TableCell className="max-w-[220px] truncate text-gray-500 text-xs" title={admin.description}>{admin.description}</TableCell>
+                              <TableCell className="max-w-[180px] truncate text-gray-500 text-xs" title={admin.address}>{admin.address}</TableCell>
+                              <TableCell className="text-gray-600 text-xs whitespace-nowrap">{admin.contactDetails}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
                   ) : (
                     <div className="p-4 text-center text-gray-500">
                       No approved admins found.
@@ -489,73 +527,147 @@ const SuperAdminDashboard: React.FC = () => {
           )}
 
           {activeSection === 'events' && (
-            <Card className="mb-8 bg-gradient-to-br from-white to-pink-50 shadow-lg hover:shadow-xl transition-all duration-300 border border-pink-100 rounded-lg overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-pink-200 to-pink-300 text-pink-800 rounded-t-lg">
-                <CardTitle>All Events</CardTitle>
+            <Card className="mb-8 bg-gradient-to-br from-white to-pink-50/30 shadow-xl shadow-pink-100/40 hover:shadow-2xl transition-all duration-300 border border-pink-100/80 rounded-2xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-pink-50 to-pink-100/80 border-b border-pink-200/60 text-pink-900 rounded-t-2xl px-6 py-4">
+                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-pink-600 shrink-0" />
+                  All Events
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {error.events && renderErrorMessage(error.events)}
                 
                 {loading.events ? (
                   renderLoadingState()
                 ) : editingEvent ? (
-                  <form onSubmit={handleUpdateEvent} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Event Name</Label>
+                  <form onSubmit={handleUpdateEvent} className="space-y-4 max-w-2xl mx-auto">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="name" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Event Name</Label>
                       <Input
                         id="name"
                         value={editingEvent.name}
                         onChange={(e) => setEditingEvent({ ...editingEvent, name: e.target.value })}
                         required
+                        className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Date</Label>
-                      <Input
-                        id="date"
-                        type="date"
-                        value={editingEvent.date}
-                        onChange={(e) => setEditingEvent({ ...editingEvent, date: e.target.value })}
-                        required
-                      />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="date" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</Label>
+                        <Input
+                          id="date"
+                          type="date"
+                          value={editingEvent.date}
+                          onChange={(e) => setEditingEvent({ ...editingEvent, date: e.target.value })}
+                          required
+                          className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="frequency" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Frequency</Label>
+                        <select
+                          id="frequency"
+                          value={editingEvent.frequency}
+                          onChange={(e) => setEditingEvent({ ...editingEvent, frequency: e.target.value })}
+                          required
+                          className="w-full p-2 border border-pink-300 hover:border-pink-400 focus:border-pink-500 rounded-md bg-white transition-colors cursor-pointer text-sm focus:outline-none"
+                        >
+                          <option value="">Select Frequency</option>
+                          <option value="Once Off">Once Off</option>
+                          <option value="Weekly">Weekly</option>
+                          <option value="Monthly">Monthly</option>
+                        </select>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="location" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Location</Label>
                       <Input
                         id="location"
                         value={editingEvent.location}
                         onChange={(e) => setEditingEvent({ ...editingEvent, location: e.target.value })}
                         required
+                        className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="frequency">Frequency</Label>
-                      <select
-                        id="frequency"
-                        value={editingEvent.frequency}
-                        onChange={(e) => setEditingEvent({ ...editingEvent, frequency: e.target.value })}
-                        required
-                        className="w-full p-2 border border-gray-300 rounded-md"
-                      >
-                        <option value="">Select Frequency</option>
-                        <option value="Once Off">Once Off</option>
-                        <option value="Weekly">Weekly</option>
-                        <option value="Monthly">Monthly</option>
-                      </select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
+                    <div className="space-y-1.5">
+                      <Label htmlFor="description" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</Label>
+                      <RichTextEditor
                         value={editingEvent.description}
-                        onChange={(e) => setEditingEvent({ ...editingEvent, description: e.target.value })}
-                        required
+                        onChange={(value) => setEditingEvent({ ...editingEvent, description: value })}
+                        placeholder="Describe the event..."
+                        minHeight="180px"
                       />
                     </div>
-                    <div className="flex justify-end space-x-2">
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <Label htmlFor="registrationLink" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Registration Link</Label>
+                        <Input
+                          id="registrationLink"
+                          placeholder="https://forms.gle/..."
+                          value={editingEvent.registrationLink || ''}
+                          onChange={(e) => setEditingEvent({ ...editingEvent, registrationLink: e.target.value })}
+                          className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="photo" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Photo URL</Label>
+                        <Input
+                          id="photo"
+                          placeholder="https://cloudinary.com/..."
+                          value={editingEvent.photo || ''}
+                          onChange={(e) => setEditingEvent({ ...editingEvent, photo: e.target.value })}
+                          className="border-pink-300 hover:border-pink-400 focus:border-pink-500 focus:ring-pink-500/20 bg-white transition-colors"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2 pt-4 border-t border-gray-100">
+                      <Switch 
+                        id="hasOpportunity" 
+                        checked={editingEvent.hasOpportunity || false} 
+                        onCheckedChange={(checked) => setEditingEvent({ ...editingEvent, hasOpportunity: checked })} 
+                      />
+                      <Label htmlFor="hasOpportunity" className="font-medium text-sm">Add Volunteer Opportunity</Label>
+                    </div>
+                    {editingEvent.hasOpportunity && (
+                      <div className="space-y-2 pl-4 border-l-2 border-pink-200">
+                        <Label htmlFor="opportunity" className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Opportunity Description</Label>
+                        <RichTextEditor 
+                          value={editingEvent.opportunity || ''} 
+                          onChange={(value) => setEditingEvent({ ...editingEvent, opportunity: value })} 
+                          placeholder="Describe the volunteer opportunity…" 
+                          minHeight="140px" 
+                        />
+                        <p className="text-xs text-gray-400">This will be shown on the Opportunities page.</p>
+                      </div>
+                    )}
+
+                    {isLoaded && (
+                      <div className="space-y-1.5 pt-4 border-t border-gray-100">
+                        <Label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Event Location (Click to set)</Label>
+                        <GoogleMap 
+                          mapContainerStyle={containerStyle} 
+                          center={mapCenter} 
+                          zoom={10}
+                          onClick={(e) => {
+                            if (e.latLng) {
+                              const lat = e.latLng.lat()
+                              const lng = e.latLng.lng()
+                              setMarkerPosition({ lat, lng })
+                              setEditingEvent({ ...editingEvent, lat, lng })
+                            }
+                          }}
+                        >
+                          <MarkerF position={markerPosition} />
+                        </GoogleMap>
+                      </div>
+                    )}
+
+                    <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
                       <Button 
                         type="submit"
-                        className="bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-sm h-9 px-4 transition-all duration-300 shadow-md"
                       >
                         Update Event
                       </Button>
@@ -563,51 +675,59 @@ const SuperAdminDashboard: React.FC = () => {
                         type="button" 
                         variant="outline" 
                         onClick={() => setEditingEvent(null)}
-                        className="border-pink-500 text-pink-600 hover:bg-pink-50 transition-all duration-300"
+                        className="border-pink-300 text-pink-600 hover:bg-pink-50 transition-all duration-300 text-sm h-9 px-4"
                       >
                         Cancel
                       </Button>
                     </div>
                   </form>
                 ) : events.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Frequency</TableHead>
-                        <TableHead>Admin</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {events.map((event) => (
-                        <TableRow key={event.id}>
-                          <TableCell>{event.name}</TableCell>
-                          <TableCell>{new Date(event.date).toLocaleDateString()}</TableCell>
-                          <TableCell>{event.location}</TableCell>
-                          <TableCell>{event.frequency}</TableCell>
-                          <TableCell>{event.adminName}</TableCell>
-                          <TableCell>
-                            <Button 
-                              onClick={() => handleEditEvent(event)} 
-                              className="mr-2 bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                            >
-                              Edit
-                            </Button>
-                            <Button 
-                              onClick={() => handleDeleteEvent(event.id)} 
-                              variant="destructive"
-                              className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                            >
-                              Delete
-                            </Button>
-                          </TableCell>
+                  <div className="overflow-x-auto w-full -mx-6 px-6 md:mx-0 md:px-0">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Location</TableHead>
+                          <TableHead>Frequency</TableHead>
+                          <TableHead>Admin</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {events.map((event) => (
+                          <TableRow key={event.id} className="hover:bg-pink-50/20">
+                            <TableCell className="font-semibold text-gray-900 whitespace-nowrap">{event.name}</TableCell>
+                            <TableCell className="text-gray-600 text-xs whitespace-nowrap">{new Date(event.date).toLocaleDateString()}</TableCell>
+                            <TableCell className="max-w-[180px] truncate text-gray-500 text-xs" title={event.location}>{event.location}</TableCell>
+                            <TableCell className="text-xs">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-pink-50 text-pink-700 border border-pink-100">
+                                {event.frequency}
+                              </span>
+                            </TableCell>
+                            <TableCell className="font-medium text-gray-700 text-xs whitespace-nowrap">{event.adminName}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Button 
+                                  onClick={() => handleEditEvent(event)} 
+                                  className="bg-gradient-to-r from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white text-xs h-8 px-3 transition-all duration-300 shadow-sm"
+                                >
+                                  Edit
+                                </Button>
+                                <Button 
+                                  onClick={() => handleDeleteEvent(event.id)} 
+                                  variant="destructive"
+                                  className="bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white text-xs h-8 px-3 transition-all duration-300 shadow-sm"
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 ) : (
                   <div className="p-4 text-center text-gray-500">
                     No events found.

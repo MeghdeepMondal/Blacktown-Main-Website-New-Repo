@@ -12,7 +12,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'PUT') {
     try {
-      const { name, date, location, description, frequency, adminId } = req.body
+      const { 
+        name, 
+        date, 
+        location, 
+        description, 
+        frequency, 
+        adminId,
+        lat,
+        lng,
+        registrationLink,
+        hasOpportunity,
+        opportunity,
+        photo
+      } = req.body
       
       // Convert the date string to ISO-8601 format
       const isoDate = new Date(date).toISOString()
@@ -25,7 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           location, 
           description, 
           frequency,
-          adminId
+          adminId,
+          lat: lat !== undefined ? Number(lat) : undefined,
+          lng: lng !== undefined ? Number(lng) : undefined,
+          registrationLink,
+          hasOpportunity: hasOpportunity !== undefined ? Boolean(hasOpportunity) : undefined,
+          opportunity,
+          photo
         },
         include: {
           admin: {
