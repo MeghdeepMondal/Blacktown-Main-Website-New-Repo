@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api'
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Slider } from "@/components/ui/slider"
@@ -59,6 +59,123 @@ const stripHtmlTags = (html: string) => {
 
 const EventsPage: React.FC = () => {
   const router = useRouter()
+  const [hoveredEvent, setHoveredEvent] = useState<Event | null>(null)
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const [map, setMap] = useState<google.maps.Map | null>(null)
+  const infoWindowRef = useRef<google.maps.InfoWindow | null>(null)
+
+  const handleMarkerMouseOver = (event: Event) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+    setHoveredEvent(event)
+  }
+
+  const handleMarkerMouseOut = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredEvent(null)
+    }, 300)
+  }
+
+  const handleInfoWindowMouseOver = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+  }
+
+  const handleInfoWindowMouseOut = () => {
+    handleMarkerMouseOut()
+  }
+
+  const handleMarkerClick = (event: Event) => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current)
+    }
+    setHoveredEvent(event)
+  }
+
+  // Clear timeout and InfoWindow on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current)
+      }
+      if (infoWindowRef.current) {
+        infoWindowRef.current.close()
+        infoWindowRef.current = null
+      }
+    }
+  }, [])
+
+  // Manage native single InfoWindow instance
+  useEffect(() => {
+    if (!map) return
+
+    if (!infoWindowRef.current) {
+      infoWindowRef.current = new google.maps.InfoWindow({
+        pixelOffset: new google.maps.Size(0, -30),
+        disableAutoPan: true,
+      })
+
+      infoWindowRef.current.addListener('closeclick', () => {
+        setHoveredEvent(null)
+      })
+    }
+
+    const infoWindow = infoWindowRef.current
+
+    if (hoveredEvent) {
+      const contentHtml = `
+        <div 
+          id="map-infowindow-card"
+          style="max-width: 240px; width: 240px; cursor: pointer; display: flex; flex-direction: column; gap: 8px; padding: 4px; font-family: sans-serif;"
+        >
+          ${hoveredEvent.photo ? `
+            <div style="position: relative; height: 112px; width: 100%; border-radius: 6px; overflow: hidden; background-color: #fdf2f8;">
+               <img src="${hoveredEvent.photo}" alt="${hoveredEvent.name}" style="object-fit: cover; width: 100%; height: 100%; border-radius: 6px;" />
+            </div>
+          ` : ''}
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <h4 style="font-weight: 600; color: #831843; font-size: 14px; margin: 0; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+              ${hoveredEvent.name}
+            </h4>
+            <p style="color: #6b7280; font-size: 11px; margin: 0; display: flex; align-items: center; gap: 6px; font-weight: 500; margin-top: 4px;">
+              📅 ${new Date(hoveredEvent.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+            </p>
+            ${hoveredEvent.admin ? `
+              <p style="color: #db2777; font-size: 11px; margin: 0; font-weight: 600; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${hoveredEvent.admin.name}
+              </p>
+            ` : ''}
+          </div>
+        </div>
+      `
+      
+      infoWindow.setContent(contentHtml)
+      infoWindow.setPosition({ lat: hoveredEvent.lat, lng: hoveredEvent.lng })
+      infoWindow.open(map)
+
+      const timer = setTimeout(() => {
+        const cardElement = document.getElementById('map-infowindow-card')
+        if (cardElement) {
+          cardElement.onclick = () => {
+            router.push(`/events/${hoveredEvent.id}`)
+          }
+          cardElement.onmouseover = () => {
+            handleInfoWindowMouseOver()
+          }
+          cardElement.onmouseout = () => {
+            handleInfoWindowMouseOut()
+          }
+        }
+      }, 50)
+
+      return () => clearTimeout(timer)
+    } else {
+      infoWindow.close()
+    }
+  }, [hoveredEvent, map])
+
   const [userLocation, setUserLocation] = useState(defaultCenter)
   const [hasLocation, setHasLocation] = useState(false)
   const [locationLoading, setLocationLoading] = useState(false)
@@ -596,6 +713,8 @@ const EventsPage: React.FC = () => {
                     mapContainerStyle={containerStyle}
                     center={userLocation}
                     zoom={12}
+                    onLoad={(mapInstance) => setMap(mapInstance)}
+                    onUnmount={() => setMap(null)}
                   >
                     {/* User location marker */}
                     {hasLocation && (
@@ -614,7 +733,9 @@ const EventsPage: React.FC = () => {
                         key={event.id}
                         position={{ lat: event.lat, lng: event.lng }}
                         title={event.name}
-                        onClick={() => router.push(`/events/${event.id}`)}
+                        onClick={() => handleMarkerClick(event)}
+                        onMouseOver={() => handleMarkerMouseOver(event)}
+                        onMouseOut={handleMarkerMouseOut}
                       />
                     ))}
 
